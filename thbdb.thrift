@@ -1,0 +1,76 @@
+#!/usr/local/bin/thrift --java --c_glib --py
+# 
+
+
+namespace java jp.co.softbank.thbdb.thrift
+namespace c_glib  thbdb
+namespace py thbdb
+
+/**
+ * A pair of Key and Value which is held on the BDB.
+ * !!This is not used currently!!
+ * !!For future use!!
+ */
+struct Item{
+  1: string key,
+  2: string value
+}
+
+/**
+ * The struct definition :
+ *     The return value of list() method.
+ * !!This is not used currently!!
+ * !!For future use!!
+ */
+struct ItemList{
+  1: i32 numOfItems ,
+  2: list<Item> items
+}
+
+/**
+ * Struct definition:
+ * The return value of key() method.
+ */
+struct Keys{
+  1: i32 numOfKeys,
+  2: list<string> key
+}
+
+/**
+ * Structs can be exceptions, if they are nasty.
+ */
+exception InvalidOperation {
+  1: i32 errorCode ,
+  2: string message
+}
+
+/**
+ * Definition of error code.
+ */
+enum ErrorCode {
+  INVALID_OPERATION = 1
+}
+
+#
+# ThBDB I/F list
+#
+# put      :Put an item on the KVS
+# putAsync :Put an item on the KVS ( Non-blocking mode )
+# get      :Get an item on the KVS
+# remove   :Remove an from the KVS
+# getKeys  :List keys from the KVS
+#
+# ping     :Check the KVS if it is alive
+# hello    :Sample implementation
+#
+service Basic
+{
+     void put( 1:string key, 2:string value ) throws (1:InvalidOperation exp ) ,
+     oneway void putAsync( 1:string key, 2:string value )  ,
+     string  get( 1:string key ) throws (1:InvalidOperation exp ),
+     void remove( 1:string key ) throws (1:InvalidOperation exp ),
+     Keys getKeys() throws (1:InvalidOperation exp ),
+     
+     void ping(),
+     string hello(1:string arg)
+}

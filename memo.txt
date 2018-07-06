@@ -1,0 +1,19 @@
+*MEMO*
+
+
+Thrift type
+  refer to :https://qiita.com/chikin14niwa/items/8d25feff1ca8d1579831f
+
+I/F
+
+*put
+
+*get
+
+*remove
+
+*list
+
+*ping
+
+*test
