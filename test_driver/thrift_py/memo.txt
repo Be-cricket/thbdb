@@ -1,0 +1,3 @@
+<thrift install dir >/lib/py/build/setup.py 
+
+>sudo python setup.py install
