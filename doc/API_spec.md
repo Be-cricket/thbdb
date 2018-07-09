@@ -1,11 +1,13 @@
 # ThBDB Server API specification
 
 ThBDB server communicate with the ThBDB clients.
+
 This document indicates APIs the ThBDB server has.
+
 Following: API specification.
 
-BASIC:
 
+## BASIC:
   put
   
   putAsync
@@ -19,7 +21,7 @@ BASIC:
   exist
 
 
-OPERATION:
+## OPERATION:
 
   initialize
   
@@ -28,4 +30,3 @@ OPERATION:
   close
   
   unlink
-  
