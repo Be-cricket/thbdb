@@ -5,13 +5,27 @@ This document indicates APIs the ThBDB server has.
 Following: API specification.
 
 BASIC:
+
   put
+  
+  putAsync
+  
   get
+  
   remove
-  list
+  
+  getKeys
+  
+  exist
+
 
 OPERATION:
+
   initialize
+  
   open
+  
   close
+  
   unlink
+  
