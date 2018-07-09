@@ -1,6 +1,6 @@
 # ThBDB Server API specification
 
-ThBDB server communicate with the ThBDB clients.
+ThBDB server communicates with the ThBDB clients.
 
 This document indicates APIs the ThBDB server has.
 
