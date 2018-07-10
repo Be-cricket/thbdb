@@ -2,7 +2,7 @@ PROGRAM = server
 IDL_FILE = thbdb.thrift
 IDL_OUT = gen-c_glib
 
-SRCS = server.c handler.c gen-c_glib/thbdb_basic.c gen-c_glib/thbdb_thbdb_types.c
+SRCS = server.c handler.c bdb_operation.c gen-c_glib/thbdb_basic.c gen-c_glib/thbdb_thbdb_types.c
 OBJS = $(SRCS:.c=.o)
 
 THRIFT = thrift
