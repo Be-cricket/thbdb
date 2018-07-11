@@ -63,6 +63,20 @@ thbdb_basicimpl_handler_hello(thbdbBasicIf * iface, gchar ** _return, const gcha
 }
 
 
+static gboolean
+thbdb_basicimpl_handler_put (thbdbBasicIf * iface, const gchar * key, const gchar * value, thbdbInvalidOperation ** exp, GError ** error)
+{
+
+  //@@@
+  puts (" ^^ put() ^^");
+
+  g_return_val_if_fail (THBDB_IS_BASIC_HANDLER (iface), FALSE);
+
+  return TRUE;
+}
+
+
+
 
 /* THBDB basicimpl Handler's instance finalizer (destructor) */
 static void
@@ -109,7 +123,8 @@ thbdb_basicimpl_handler_class_init (ThbdbBasicimplHandlerClass *klass)
   /* Register our implementations of CalculatorHandler's methods */
   thbdb_basic_handler_class->hello =
     thbdb_basicimpl_handler_hello;
-
+  thbdb_basic_handler_class->put =
+    thbdb_basicimpl_handler_put;
 }
 
 

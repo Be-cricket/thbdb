@@ -12,14 +12,20 @@
 #include <string.h>
 #include <db.h>
 #include "bdb_operation.h"
+#include "thbdb_errno.h"
+
+
+/**
+ * A handle of the BDB.
+ */
+DB *dbp;
 
 /**
  * Initializes the bdb that ThBDB contains.
  * This function is a sample implementation.
  */
-int init(){
+int initializeBDB(){
 
-  DB *dbp;   /* Handle of the database */
   int ret;   /* Return code from the BDB */
 
   
@@ -27,7 +33,7 @@ int init(){
   if ((ret = db_create(&dbp, NULL, 0)) != 0) {
     fprintf(stderr,
             "%s: db_create: %s\n", PROGRAM_NAME, db_strerror(ret));
-    return (EXIT_FAILURE);
+    return (THBDB_DB_OPEN_ERROR);
   }
 
   /*                           
@@ -40,6 +46,42 @@ int init(){
   dbp->set_errpfx(dbp, PROGRAM_NAME);
   dbp->set_errfile(dbp, stderr);
 
+  /*
+   * Configure the database to use:
+   *  A database page size of 1024 bytes. It could be at most 64KB.   
+   *  A database cache size of 0 GB and 32KB, in a single region.
+   */
+  if ((ret = dbp->set_pagesize(dbp, BDB_PAGESIZE)) != 0) {
+    dbp->err(dbp, ret, "set_pagesize");
+    goto err_close_db;
+  }
+  if ((ret = dbp->set_cachesize(dbp, BDB_CACHESIZE_GB, BDB_CACHESIZE_BYTE, 1)) != 0) {
+    dbp->err(dbp, ret, "set_cachesize");
+    goto err_close_db;
+  }
+
+   /* 
+    * Now open the configured handle. The DB_HASH specifies that it
+    * it will be a hash_index mode. You could experiment by changing that to DB_BTREE 
+    * in order to see how the behavior changes.
+    */
+    if ((ret = dbp->open(dbp,
+        NULL, PROGRAM_NAME
+                         , NULL, DB_HASH, DB_CREATE, 0664)) != 0) {
+        dbp->err(dbp, ret, "%s: open",PROGRAM_NAME );
+        goto err_close_db;
+    }
+
   
-  return 0;
+  return THBDB_NORMAL;
+       
+ err_close_db:
+  /*
+   * Close the database. Inside the close() call Berkeley DB flushes the
+   * database cache out to the filesystem. The DB_NOSYNC option is ignored
+   * in cases such as this one, which do not use an explicitly created       
+   * environment (DB_ENV).                                                      
+   */
+  (void)dbp->close(dbp, 0);
+  return (THBDB_DB_OPEN_ERROR);
 }
