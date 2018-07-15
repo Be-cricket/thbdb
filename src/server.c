@@ -49,6 +49,10 @@ sigint_handler (int signal_number)
   /* Take note we were called */
   sigint_received = TRUE;
 
+  /* Close internal BDB */
+  puts( " Closing internal BDB.  " );
+  close_bdb();
+  
   /* Shut down the server gracefully */
   if (server != NULL)
     thrift_server_stop (server);
@@ -76,7 +80,7 @@ int main ( void ){
   /** 
    * Initialize the BDB 
    */
-  ret = initializeBDB();
+  ret = init_bdb();
   if ( ret ){
     return EXIT_FAILURE;
   }

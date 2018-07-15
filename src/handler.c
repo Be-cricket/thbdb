@@ -6,10 +6,11 @@
  * Handling the basic operation for the bdb.
  */
 
-#include <glib-object.h>
 #include <signal.h>
 #include <stdio.h>
 #include <string.h>
+
+#include <glib-object.h>
 
 #include <thrift/c_glib/thrift.h>
 #include <thrift/c_glib/protocol/thrift_binary_protocol_factory.h>
@@ -22,7 +23,10 @@
 
 #include "gen-c_glib/thbdb_basic.h"
 #include "gen-c_glib/thbdb_thbdb_types.h"
+#include "thbdb_errno.h"
+#include "bdb_operation.h"
 #include "handler.h"
+
 
 /* ---------------------------------------------------------------- */
 
@@ -49,7 +53,6 @@ thbdb_basicimpl_handler_hello(thbdbBasicIf * iface, gchar ** _return, const gcha
   THRIFT_UNUSED_VAR (error);
 
   //@@@
-
   puts (" ^^ hello() ^^");
    
   GString *retValue;
@@ -63,19 +66,71 @@ thbdb_basicimpl_handler_hello(thbdbBasicIf * iface, gchar ** _return, const gcha
 }
 
 
+/**
+ * Puts on the internal BDB.
+ * NOOVERWRITE mode:
+ * An error will be occered if the specified key is already existing.
+ */
 static gboolean
 thbdb_basicimpl_handler_put (thbdbBasicIf * iface, const gchar * key, const gchar * value, thbdbInvalidOperation ** exp, GError ** error)
 {
 
-  //@@@
-  puts (" ^^ put() ^^");
-
+  int ret = THBDB_NORMAL;
+  GString* gkey;
+  GString* gvalue;
+  int returnValue = TRUE;
+  
+  THRIFT_UNUSED_VAR (iface);
+  THRIFT_UNUSED_VAR (error);
   g_return_val_if_fail (THBDB_IS_BASIC_HANDLER (iface), FALSE);
 
-  return TRUE;
+  //@@@
+  puts (" ^^ put() ^^");
+  gkey = g_string_new( key ); 
+  gvalue = g_string_new( value ); 
+
+  ret = put_on_bdb( 
+                   gkey->str,
+                   gkey->len,
+                   gvalue->str,
+                   gvalue->len);
+  if( ret ){
+    g_set_error(
+                error,
+                G_THBDB_ERROR,
+                ret,
+                "An error is occered under putting on the BDB. CODE=(%d)",
+                ret
+                );
+    
+    returnValue = FALSE;
+  }
+
+  /* Free memory(gstring)  */
+  if( gkey )
+    g_string_free( gkey,FALSE );
+  if( gvalue )
+    g_string_free( gvalue,FALSE );
+  
+  return returnValue;
+  
 }
 
+/**
+ * Check if the specified key exists 
+ *
+ */
+gboolean thbdb_basicimpl_handler_exists (thbdbBasicIf * iface, gboolean* _return, const gchar * key, thbdbInvalidOperation ** exp, GError ** error)
+{
+  g_return_val_if_fail (THBDB_IS_BASIC_HANDLER (iface), FALSE);
 
+  //@@@
+  puts (" ^^ exists() ^^ ");
+
+  *_return = FALSE;
+  
+  return TRUE;
+}
 
 
 /* THBDB basicimpl Handler's instance finalizer (destructor) */
@@ -111,7 +166,7 @@ static void
 thbdb_basicimpl_handler_class_init (ThbdbBasicimplHandlerClass *klass)
 {
   //@@@
-  printf( "class init ¥n " );
+  puts( "Initializing a handler class.... " );
   
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   thbdbBasicHandlerClass *thbdb_basic_handler_class =
@@ -125,6 +180,8 @@ thbdb_basicimpl_handler_class_init (ThbdbBasicimplHandlerClass *klass)
     thbdb_basicimpl_handler_hello;
   thbdb_basic_handler_class->put =
     thbdb_basicimpl_handler_put;
+  thbdb_basic_handler_class->exists =
+    thbdb_basicimpl_handler_exists;
 }
 
 

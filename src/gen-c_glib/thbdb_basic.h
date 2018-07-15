@@ -20,11 +20,13 @@ struct _thbdbBasicIfInterface
 
   gboolean (*put) (thbdbBasicIf *iface, const gchar * key, const gchar * value, thbdbInvalidOperation ** exp, GError **error);
   gboolean (*put_async) (thbdbBasicIf *iface, const gchar * key, const gchar * value, GError **error);
+  gboolean (*exists) (thbdbBasicIf *iface, gboolean* _return, const gchar * key, thbdbInvalidOperation ** exp, GError **error);
   gboolean (*get) (thbdbBasicIf *iface, gchar ** _return, const gchar * key, thbdbInvalidOperation ** exp, GError **error);
   gboolean (*remove) (thbdbBasicIf *iface, const gchar * key, thbdbInvalidOperation ** exp, GError **error);
   gboolean (*get_keys) (thbdbBasicIf *iface, thbdbKeys ** _return, thbdbInvalidOperation ** exp, GError **error);
   gboolean (*ping) (thbdbBasicIf *iface, GError **error);
   gboolean (*hello) (thbdbBasicIf *iface, gchar ** _return, const gchar * arg, GError **error);
+  gboolean (*get_status) (thbdbBasicIf *iface, gint32* _return, GError **error);
 };
 typedef struct _thbdbBasicIfInterface thbdbBasicIfInterface;
 
@@ -36,11 +38,13 @@ GType thbdb_basic_if_get_type (void);
 
 gboolean thbdb_basic_if_put (thbdbBasicIf *iface, const gchar * key, const gchar * value, thbdbInvalidOperation ** exp, GError **error);
 gboolean thbdb_basic_if_put_async (thbdbBasicIf *iface, const gchar * key, const gchar * value, GError **error);
+gboolean thbdb_basic_if_exists (thbdbBasicIf *iface, gboolean* _return, const gchar * key, thbdbInvalidOperation ** exp, GError **error);
 gboolean thbdb_basic_if_get (thbdbBasicIf *iface, gchar ** _return, const gchar * key, thbdbInvalidOperation ** exp, GError **error);
 gboolean thbdb_basic_if_remove (thbdbBasicIf *iface, const gchar * key, thbdbInvalidOperation ** exp, GError **error);
 gboolean thbdb_basic_if_get_keys (thbdbBasicIf *iface, thbdbKeys ** _return, thbdbInvalidOperation ** exp, GError **error);
 gboolean thbdb_basic_if_ping (thbdbBasicIf *iface, GError **error);
 gboolean thbdb_basic_if_hello (thbdbBasicIf *iface, gchar ** _return, const gchar * arg, GError **error);
+gboolean thbdb_basic_if_get_status (thbdbBasicIf *iface, gint32* _return, GError **error);
 
 /* Basic service client */
 struct _thbdbBasicClient
@@ -71,6 +75,9 @@ gboolean thbdb_basic_client_send_put (thbdbBasicIf * iface, const gchar * key, c
 gboolean thbdb_basic_client_recv_put (thbdbBasicIf * iface, thbdbInvalidOperation ** exp, GError ** error);
 gboolean thbdb_basic_client_put_async (thbdbBasicIf * iface, const gchar * key, const gchar * value, GError ** error);
 gboolean thbdb_basic_client_send_put_async (thbdbBasicIf * iface, const gchar * key, const gchar * value, GError ** error);
+gboolean thbdb_basic_client_exists (thbdbBasicIf * iface, gboolean* _return, const gchar * key, thbdbInvalidOperation ** exp, GError ** error);
+gboolean thbdb_basic_client_send_exists (thbdbBasicIf * iface, const gchar * key, GError ** error);
+gboolean thbdb_basic_client_recv_exists (thbdbBasicIf * iface, gboolean* _return, thbdbInvalidOperation ** exp, GError ** error);
 gboolean thbdb_basic_client_get (thbdbBasicIf * iface, gchar ** _return, const gchar * key, thbdbInvalidOperation ** exp, GError ** error);
 gboolean thbdb_basic_client_send_get (thbdbBasicIf * iface, const gchar * key, GError ** error);
 gboolean thbdb_basic_client_recv_get (thbdbBasicIf * iface, gchar ** _return, thbdbInvalidOperation ** exp, GError ** error);
@@ -86,6 +93,9 @@ gboolean thbdb_basic_client_recv_ping (thbdbBasicIf * iface, GError ** error);
 gboolean thbdb_basic_client_hello (thbdbBasicIf * iface, gchar ** _return, const gchar * arg, GError ** error);
 gboolean thbdb_basic_client_send_hello (thbdbBasicIf * iface, const gchar * arg, GError ** error);
 gboolean thbdb_basic_client_recv_hello (thbdbBasicIf * iface, gchar ** _return, GError ** error);
+gboolean thbdb_basic_client_get_status (thbdbBasicIf * iface, gint32* _return, GError ** error);
+gboolean thbdb_basic_client_send_get_status (thbdbBasicIf * iface, GError ** error);
+gboolean thbdb_basic_client_recv_get_status (thbdbBasicIf * iface, gint32* _return, GError ** error);
 void basic_client_set_property (GObject *object, guint property_id, const GValue *value, GParamSpec *pspec);
 void basic_client_get_property (GObject *object, guint property_id, GValue *value, GParamSpec *pspec);
 
@@ -102,11 +112,13 @@ struct _thbdbBasicHandlerClass
 
   gboolean (*put) (thbdbBasicIf *iface, const gchar * key, const gchar * value, thbdbInvalidOperation ** exp, GError **error);
   gboolean (*put_async) (thbdbBasicIf *iface, const gchar * key, const gchar * value, GError **error);
+  gboolean (*exists) (thbdbBasicIf *iface, gboolean* _return, const gchar * key, thbdbInvalidOperation ** exp, GError **error);
   gboolean (*get) (thbdbBasicIf *iface, gchar ** _return, const gchar * key, thbdbInvalidOperation ** exp, GError **error);
   gboolean (*remove) (thbdbBasicIf *iface, const gchar * key, thbdbInvalidOperation ** exp, GError **error);
   gboolean (*get_keys) (thbdbBasicIf *iface, thbdbKeys ** _return, thbdbInvalidOperation ** exp, GError **error);
   gboolean (*ping) (thbdbBasicIf *iface, GError **error);
   gboolean (*hello) (thbdbBasicIf *iface, gchar ** _return, const gchar * arg, GError **error);
+  gboolean (*get_status) (thbdbBasicIf *iface, gint32* _return, GError **error);
 };
 typedef struct _thbdbBasicHandlerClass thbdbBasicHandlerClass;
 
@@ -120,11 +132,13 @@ GType thbdb_basic_handler_get_type (void);
 
 gboolean thbdb_basic_handler_put (thbdbBasicIf *iface, const gchar * key, const gchar * value, thbdbInvalidOperation ** exp, GError **error);
 gboolean thbdb_basic_handler_put_async (thbdbBasicIf *iface, const gchar * key, const gchar * value, GError **error);
+gboolean thbdb_basic_handler_exists (thbdbBasicIf *iface, gboolean* _return, const gchar * key, thbdbInvalidOperation ** exp, GError **error);
 gboolean thbdb_basic_handler_get (thbdbBasicIf *iface, gchar ** _return, const gchar * key, thbdbInvalidOperation ** exp, GError **error);
 gboolean thbdb_basic_handler_remove (thbdbBasicIf *iface, const gchar * key, thbdbInvalidOperation ** exp, GError **error);
 gboolean thbdb_basic_handler_get_keys (thbdbBasicIf *iface, thbdbKeys ** _return, thbdbInvalidOperation ** exp, GError **error);
 gboolean thbdb_basic_handler_ping (thbdbBasicIf *iface, GError **error);
 gboolean thbdb_basic_handler_hello (thbdbBasicIf *iface, gchar ** _return, const gchar * arg, GError **error);
+gboolean thbdb_basic_handler_get_status (thbdbBasicIf *iface, gint32* _return, GError **error);
 
 /* Basic processor */
 struct _thbdbBasicProcessor
