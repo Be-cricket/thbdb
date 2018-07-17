@@ -223,6 +223,58 @@ GType thbdb_basic_put_async_args_get_type (void);
 #define THBDB_IS_BASIC_PUT_ASYNC_ARGS_CLASS(c) (G_TYPE_CHECK_CLASS_TYPE ((c), THBDB_TYPE_BASIC_PUT_ASYNC_ARGS))
 #define THBDB_BASIC_PUT_ASYNC_ARGS_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), THBDB_TYPE_BASIC_PUT_ASYNC_ARGS, thbdbBasicPutAsyncArgsClass))
 
+/* struct BasicExistsArgs */
+struct _thbdbBasicExistsArgs
+{ 
+  ThriftStruct parent; 
+
+  /* public */
+  gchar * key;
+  gboolean __isset_key;
+};
+typedef struct _thbdbBasicExistsArgs thbdbBasicExistsArgs;
+
+struct _thbdbBasicExistsArgsClass
+{
+  ThriftStructClass parent;
+};
+typedef struct _thbdbBasicExistsArgsClass thbdbBasicExistsArgsClass;
+
+GType thbdb_basic_exists_args_get_type (void);
+#define THBDB_TYPE_BASIC_EXISTS_ARGS (thbdb_basic_exists_args_get_type())
+#define THBDB_BASIC_EXISTS_ARGS(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), THBDB_TYPE_BASIC_EXISTS_ARGS, thbdbBasicExistsArgs))
+#define THBDB_BASIC_EXISTS_ARGS_CLASS(c) (G_TYPE_CHECK_CLASS_CAST ((c), THBDB__TYPE_BASIC_EXISTS_ARGS, thbdbBasicExistsArgsClass))
+#define THBDB_IS_BASIC_EXISTS_ARGS(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), THBDB_TYPE_BASIC_EXISTS_ARGS))
+#define THBDB_IS_BASIC_EXISTS_ARGS_CLASS(c) (G_TYPE_CHECK_CLASS_TYPE ((c), THBDB_TYPE_BASIC_EXISTS_ARGS))
+#define THBDB_BASIC_EXISTS_ARGS_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), THBDB_TYPE_BASIC_EXISTS_ARGS, thbdbBasicExistsArgsClass))
+
+/* struct BasicExistsResult */
+struct _thbdbBasicExistsResult
+{ 
+  ThriftStruct parent; 
+
+  /* public */
+  gboolean success;
+  gboolean __isset_success;
+  thbdbInvalidOperation * exp;
+  gboolean __isset_exp;
+};
+typedef struct _thbdbBasicExistsResult thbdbBasicExistsResult;
+
+struct _thbdbBasicExistsResultClass
+{
+  ThriftStructClass parent;
+};
+typedef struct _thbdbBasicExistsResultClass thbdbBasicExistsResultClass;
+
+GType thbdb_basic_exists_result_get_type (void);
+#define THBDB_TYPE_BASIC_EXISTS_RESULT (thbdb_basic_exists_result_get_type())
+#define THBDB_BASIC_EXISTS_RESULT(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), THBDB_TYPE_BASIC_EXISTS_RESULT, thbdbBasicExistsResult))
+#define THBDB_BASIC_EXISTS_RESULT_CLASS(c) (G_TYPE_CHECK_CLASS_CAST ((c), THBDB__TYPE_BASIC_EXISTS_RESULT, thbdbBasicExistsResultClass))
+#define THBDB_IS_BASIC_EXISTS_RESULT(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), THBDB_TYPE_BASIC_EXISTS_RESULT))
+#define THBDB_IS_BASIC_EXISTS_RESULT_CLASS(c) (G_TYPE_CHECK_CLASS_TYPE ((c), THBDB_TYPE_BASIC_EXISTS_RESULT))
+#define THBDB_BASIC_EXISTS_RESULT_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), THBDB_TYPE_BASIC_EXISTS_RESULT, thbdbBasicExistsResultClass))
+
 /* struct BasicGetArgs */
 struct _thbdbBasicGetArgs
 { 
@@ -470,5 +522,53 @@ GType thbdb_basic_hello_result_get_type (void);
 #define THBDB_IS_BASIC_HELLO_RESULT(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), THBDB_TYPE_BASIC_HELLO_RESULT))
 #define THBDB_IS_BASIC_HELLO_RESULT_CLASS(c) (G_TYPE_CHECK_CLASS_TYPE ((c), THBDB_TYPE_BASIC_HELLO_RESULT))
 #define THBDB_BASIC_HELLO_RESULT_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), THBDB_TYPE_BASIC_HELLO_RESULT, thbdbBasicHelloResultClass))
+
+/* struct BasicGetStatusArgs */
+struct _thbdbBasicGetStatusArgs
+{ 
+  ThriftStruct parent; 
+
+  /* public */
+};
+typedef struct _thbdbBasicGetStatusArgs thbdbBasicGetStatusArgs;
+
+struct _thbdbBasicGetStatusArgsClass
+{
+  ThriftStructClass parent;
+};
+typedef struct _thbdbBasicGetStatusArgsClass thbdbBasicGetStatusArgsClass;
+
+GType thbdb_basic_get_status_args_get_type (void);
+#define THBDB_TYPE_BASIC_GET_STATUS_ARGS (thbdb_basic_get_status_args_get_type())
+#define THBDB_BASIC_GET_STATUS_ARGS(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), THBDB_TYPE_BASIC_GET_STATUS_ARGS, thbdbBasicGetStatusArgs))
+#define THBDB_BASIC_GET_STATUS_ARGS_CLASS(c) (G_TYPE_CHECK_CLASS_CAST ((c), THBDB__TYPE_BASIC_GET_STATUS_ARGS, thbdbBasicGetStatusArgsClass))
+#define THBDB_IS_BASIC_GET_STATUS_ARGS(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), THBDB_TYPE_BASIC_GET_STATUS_ARGS))
+#define THBDB_IS_BASIC_GET_STATUS_ARGS_CLASS(c) (G_TYPE_CHECK_CLASS_TYPE ((c), THBDB_TYPE_BASIC_GET_STATUS_ARGS))
+#define THBDB_BASIC_GET_STATUS_ARGS_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), THBDB_TYPE_BASIC_GET_STATUS_ARGS, thbdbBasicGetStatusArgsClass))
+
+/* struct BasicGetStatusResult */
+struct _thbdbBasicGetStatusResult
+{ 
+  ThriftStruct parent; 
+
+  /* public */
+  gint32 success;
+  gboolean __isset_success;
+};
+typedef struct _thbdbBasicGetStatusResult thbdbBasicGetStatusResult;
+
+struct _thbdbBasicGetStatusResultClass
+{
+  ThriftStructClass parent;
+};
+typedef struct _thbdbBasicGetStatusResultClass thbdbBasicGetStatusResultClass;
+
+GType thbdb_basic_get_status_result_get_type (void);
+#define THBDB_TYPE_BASIC_GET_STATUS_RESULT (thbdb_basic_get_status_result_get_type())
+#define THBDB_BASIC_GET_STATUS_RESULT(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), THBDB_TYPE_BASIC_GET_STATUS_RESULT, thbdbBasicGetStatusResult))
+#define THBDB_BASIC_GET_STATUS_RESULT_CLASS(c) (G_TYPE_CHECK_CLASS_CAST ((c), THBDB__TYPE_BASIC_GET_STATUS_RESULT, thbdbBasicGetStatusResultClass))
+#define THBDB_IS_BASIC_GET_STATUS_RESULT(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), THBDB_TYPE_BASIC_GET_STATUS_RESULT))
+#define THBDB_IS_BASIC_GET_STATUS_RESULT_CLASS(c) (G_TYPE_CHECK_CLASS_TYPE ((c), THBDB_TYPE_BASIC_GET_STATUS_RESULT))
+#define THBDB_BASIC_GET_STATUS_RESULT_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), THBDB_TYPE_BASIC_GET_STATUS_RESULT, thbdbBasicGetStatusResultClass))
 
 #endif /* THBDB_THBDB_TYPES_H */

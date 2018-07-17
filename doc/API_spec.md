@@ -12,7 +12,7 @@ Following: API specification.
   Associates the specified key(k:string) with the specified value(v:string) int the ThBDB.
   
 ### putAsync( k:string, v:string )
-  Puts on the BDB asynchronusly
+  Puts on the BDB asynchronusly.
   
 ### string get( k:string )
   Returns the value(v:string) with which the specified key(k:string) associates.

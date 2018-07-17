@@ -24,6 +24,13 @@ if __name__ == '__main__':
         transport.open()
 
         print "Call hello() = %s " % (client.hello("Yeah!"),)
+
+        print "Call put() = %s " % (client.put("a","a"),)
+
+        print "Call exists(\"a\") = %s " % (client.exists("a"),)
+
+        print "Call exists(\"c\") = %s " % (client.exists("c"),)
+
         transport.close()
 
     except Thrift.TException, tx:

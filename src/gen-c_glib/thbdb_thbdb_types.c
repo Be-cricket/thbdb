@@ -2099,6 +2099,540 @@ thbdb_basic_put_async_args_get_type (void)
   return type;
 }
 
+enum _thbdbBasicExistsArgsProperties
+{
+  PROP_THBDB_BASIC_EXISTS_ARGS_0,
+  PROP_THBDB_BASIC_EXISTS_ARGS_KEY
+};
+
+/* reads a basic_exists_args object */
+static gint32
+thbdb_basic_exists_args_read (ThriftStruct *object, ThriftProtocol *protocol, GError **error)
+{
+  gint32 ret;
+  gint32 xfer = 0;
+  gchar *name = NULL;
+  ThriftType ftype;
+  gint16 fid;
+  guint32 len = 0;
+  gpointer data = NULL;
+  thbdbBasicExistsArgs * this_object = THBDB_BASIC_EXISTS_ARGS(object);
+
+  /* satisfy -Wall in case these aren't used */
+  THRIFT_UNUSED_VAR (len);
+  THRIFT_UNUSED_VAR (data);
+  THRIFT_UNUSED_VAR (this_object);
+
+  /* read the struct begin marker */
+  if ((ret = thrift_protocol_read_struct_begin (protocol, &name, error)) < 0)
+  {
+    if (name) g_free (name);
+    return -1;
+  }
+  xfer += ret;
+  if (name) g_free (name);
+  name = NULL;
+
+  /* read the struct fields */
+  while (1)
+  {
+    /* read the beginning of a field */
+    if ((ret = thrift_protocol_read_field_begin (protocol, &name, &ftype, &fid, error)) < 0)
+    {
+      if (name) g_free (name);
+      return -1;
+    }
+    xfer += ret;
+    if (name) g_free (name);
+    name = NULL;
+
+    /* break if we get a STOP field */
+    if (ftype == T_STOP)
+    {
+      break;
+    }
+
+    switch (fid)
+    {
+      case 1:
+        if (ftype == T_STRING)
+        {
+          if (this_object->key != NULL)
+          {
+            g_free(this_object->key);
+            this_object->key = NULL;
+          }
+
+          if ((ret = thrift_protocol_read_string (protocol, &this_object->key, error)) < 0)
+            return -1;
+          xfer += ret;
+          this_object->__isset_key = TRUE;
+        } else {
+          if ((ret = thrift_protocol_skip (protocol, ftype, error)) < 0)
+            return -1;
+          xfer += ret;
+        }
+        break;
+      default:
+        if ((ret = thrift_protocol_skip (protocol, ftype, error)) < 0)
+          return -1;
+        xfer += ret;
+        break;
+    }
+    if ((ret = thrift_protocol_read_field_end (protocol, error)) < 0)
+      return -1;
+    xfer += ret;
+  }
+
+  if ((ret = thrift_protocol_read_struct_end (protocol, error)) < 0)
+    return -1;
+  xfer += ret;
+
+  return xfer;
+}
+
+static gint32
+thbdb_basic_exists_args_write (ThriftStruct *object, ThriftProtocol *protocol, GError **error)
+{
+  gint32 ret;
+  gint32 xfer = 0;
+
+  thbdbBasicExistsArgs * this_object = THBDB_BASIC_EXISTS_ARGS(object);
+  THRIFT_UNUSED_VAR (this_object);
+  if ((ret = thrift_protocol_write_struct_begin (protocol, "BasicExistsArgs", error)) < 0)
+    return -1;
+  xfer += ret;
+  if ((ret = thrift_protocol_write_field_begin (protocol, "key", T_STRING, 1, error)) < 0)
+    return -1;
+  xfer += ret;
+  if ((ret = thrift_protocol_write_string (protocol, this_object->key, error)) < 0)
+    return -1;
+  xfer += ret;
+
+  if ((ret = thrift_protocol_write_field_end (protocol, error)) < 0)
+    return -1;
+  xfer += ret;
+  if ((ret = thrift_protocol_write_field_stop (protocol, error)) < 0)
+    return -1;
+  xfer += ret;
+  if ((ret = thrift_protocol_write_struct_end (protocol, error)) < 0)
+    return -1;
+  xfer += ret;
+
+  return xfer;
+}
+
+static void
+thbdb_basic_exists_args_set_property (GObject *object,
+                                      guint property_id,
+                                      const GValue *value,
+                                      GParamSpec *pspec)
+{
+  thbdbBasicExistsArgs *self = THBDB_BASIC_EXISTS_ARGS (object);
+
+  switch (property_id)
+  {
+    case PROP_THBDB_BASIC_EXISTS_ARGS_KEY:
+      if (self->key != NULL)
+        g_free (self->key);
+      self->key = g_value_dup_string (value);
+      self->__isset_key = TRUE;
+      break;
+
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+      break;
+  }
+}
+
+static void
+thbdb_basic_exists_args_get_property (GObject *object,
+                                      guint property_id,
+                                      GValue *value,
+                                      GParamSpec *pspec)
+{
+  thbdbBasicExistsArgs *self = THBDB_BASIC_EXISTS_ARGS (object);
+
+  switch (property_id)
+  {
+    case PROP_THBDB_BASIC_EXISTS_ARGS_KEY:
+      g_value_set_string (value, self->key);
+      break;
+
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+      break;
+  }
+}
+
+static void 
+thbdb_basic_exists_args_instance_init (thbdbBasicExistsArgs * object)
+{
+  /* satisfy -Wall */
+  THRIFT_UNUSED_VAR (object);
+  object->key = NULL;
+  object->__isset_key = FALSE;
+}
+
+static void 
+thbdb_basic_exists_args_finalize (GObject *object)
+{
+  thbdbBasicExistsArgs *tobject = THBDB_BASIC_EXISTS_ARGS (object);
+
+  /* satisfy -Wall in case we don't use tobject */
+  THRIFT_UNUSED_VAR (tobject);
+  if (tobject->key != NULL)
+  {
+    g_free(tobject->key);
+    tobject->key = NULL;
+  }
+}
+
+static void
+thbdb_basic_exists_args_class_init (thbdbBasicExistsArgsClass * cls)
+{
+  GObjectClass *gobject_class = G_OBJECT_CLASS (cls);
+  ThriftStructClass *struct_class = THRIFT_STRUCT_CLASS (cls);
+
+  struct_class->read = thbdb_basic_exists_args_read;
+  struct_class->write = thbdb_basic_exists_args_write;
+
+  gobject_class->finalize = thbdb_basic_exists_args_finalize;
+  gobject_class->get_property = thbdb_basic_exists_args_get_property;
+  gobject_class->set_property = thbdb_basic_exists_args_set_property;
+
+  g_object_class_install_property
+    (gobject_class,
+     PROP_THBDB_BASIC_EXISTS_ARGS_KEY,
+     g_param_spec_string ("key",
+                          NULL,
+                          NULL,
+                          NULL,
+                          G_PARAM_READWRITE));
+}
+
+GType
+thbdb_basic_exists_args_get_type (void)
+{
+  static GType type = 0;
+
+  if (type == 0) 
+  {
+    static const GTypeInfo type_info = 
+    {
+      sizeof (thbdbBasicExistsArgsClass),
+      NULL, /* base_init */
+      NULL, /* base_finalize */
+      (GClassInitFunc) thbdb_basic_exists_args_class_init,
+      NULL, /* class_finalize */
+      NULL, /* class_data */
+      sizeof (thbdbBasicExistsArgs),
+      0, /* n_preallocs */
+      (GInstanceInitFunc) thbdb_basic_exists_args_instance_init,
+      NULL, /* value_table */
+    };
+
+    type = g_type_register_static (THRIFT_TYPE_STRUCT, 
+                                   "thbdbBasicExistsArgsType",
+                                   &type_info, 0);
+  }
+
+  return type;
+}
+
+enum _thbdbBasicExistsResultProperties
+{
+  PROP_THBDB_BASIC_EXISTS_RESULT_0,
+  PROP_THBDB_BASIC_EXISTS_RESULT_SUCCESS,
+  PROP_THBDB_BASIC_EXISTS_RESULT_EXP
+};
+
+/* reads a basic_exists_result object */
+static gint32
+thbdb_basic_exists_result_read (ThriftStruct *object, ThriftProtocol *protocol, GError **error)
+{
+  gint32 ret;
+  gint32 xfer = 0;
+  gchar *name = NULL;
+  ThriftType ftype;
+  gint16 fid;
+  guint32 len = 0;
+  gpointer data = NULL;
+  thbdbBasicExistsResult * this_object = THBDB_BASIC_EXISTS_RESULT(object);
+
+  /* satisfy -Wall in case these aren't used */
+  THRIFT_UNUSED_VAR (len);
+  THRIFT_UNUSED_VAR (data);
+  THRIFT_UNUSED_VAR (this_object);
+
+  /* read the struct begin marker */
+  if ((ret = thrift_protocol_read_struct_begin (protocol, &name, error)) < 0)
+  {
+    if (name) g_free (name);
+    return -1;
+  }
+  xfer += ret;
+  if (name) g_free (name);
+  name = NULL;
+
+  /* read the struct fields */
+  while (1)
+  {
+    /* read the beginning of a field */
+    if ((ret = thrift_protocol_read_field_begin (protocol, &name, &ftype, &fid, error)) < 0)
+    {
+      if (name) g_free (name);
+      return -1;
+    }
+    xfer += ret;
+    if (name) g_free (name);
+    name = NULL;
+
+    /* break if we get a STOP field */
+    if (ftype == T_STOP)
+    {
+      break;
+    }
+
+    switch (fid)
+    {
+      case 0:
+        if (ftype == T_BOOL)
+        {
+          if ((ret = thrift_protocol_read_bool (protocol, &this_object->success, error)) < 0)
+            return -1;
+          xfer += ret;
+          this_object->__isset_success = TRUE;
+        } else {
+          if ((ret = thrift_protocol_skip (protocol, ftype, error)) < 0)
+            return -1;
+          xfer += ret;
+        }
+        break;
+      case 1:
+        if (ftype == T_STRUCT)
+        {
+          /* This struct is an exception */
+          if ( this_object->exp != NULL)
+          {
+            g_object_unref (this_object->exp);
+          }
+          this_object->exp = g_object_new (THBDB_TYPE_INVALID_OPERATION, NULL);
+          if ((ret = thrift_struct_read (THRIFT_STRUCT (this_object->exp), protocol, error)) < 0)
+          {
+            g_object_unref (this_object->exp);
+            this_object->exp = NULL;
+            return -1;
+          }
+          xfer += ret;
+          this_object->__isset_exp = TRUE;
+        } else {
+          if ((ret = thrift_protocol_skip (protocol, ftype, error)) < 0)
+            return -1;
+          xfer += ret;
+        }
+        break;
+      default:
+        if ((ret = thrift_protocol_skip (protocol, ftype, error)) < 0)
+          return -1;
+        xfer += ret;
+        break;
+    }
+    if ((ret = thrift_protocol_read_field_end (protocol, error)) < 0)
+      return -1;
+    xfer += ret;
+  }
+
+  if ((ret = thrift_protocol_read_struct_end (protocol, error)) < 0)
+    return -1;
+  xfer += ret;
+
+  return xfer;
+}
+
+static gint32
+thbdb_basic_exists_result_write (ThriftStruct *object, ThriftProtocol *protocol, GError **error)
+{
+  gint32 ret;
+  gint32 xfer = 0;
+
+  thbdbBasicExistsResult * this_object = THBDB_BASIC_EXISTS_RESULT(object);
+  THRIFT_UNUSED_VAR (this_object);
+  if ((ret = thrift_protocol_write_struct_begin (protocol, "BasicExistsResult", error)) < 0)
+    return -1;
+  xfer += ret;
+  if (this_object->__isset_success == TRUE) {
+    if ((ret = thrift_protocol_write_field_begin (protocol, "success", T_BOOL, 0, error)) < 0)
+      return -1;
+    xfer += ret;
+    if ((ret = thrift_protocol_write_bool (protocol, this_object->success, error)) < 0)
+      return -1;
+    xfer += ret;
+
+    if ((ret = thrift_protocol_write_field_end (protocol, error)) < 0)
+      return -1;
+    xfer += ret;
+  }
+  if (this_object->__isset_exp == TRUE) {
+    if ((ret = thrift_protocol_write_field_begin (protocol, "exp", T_STRUCT, 1, error)) < 0)
+      return -1;
+    xfer += ret;
+    if ((ret = thrift_struct_write (THRIFT_STRUCT (this_object->exp), protocol, error)) < 0)
+      return -1;
+    xfer += ret;
+
+    if ((ret = thrift_protocol_write_field_end (protocol, error)) < 0)
+      return -1;
+    xfer += ret;
+  }
+  if ((ret = thrift_protocol_write_field_stop (protocol, error)) < 0)
+    return -1;
+  xfer += ret;
+  if ((ret = thrift_protocol_write_struct_end (protocol, error)) < 0)
+    return -1;
+  xfer += ret;
+
+  return xfer;
+}
+
+static void
+thbdb_basic_exists_result_set_property (GObject *object,
+                                        guint property_id,
+                                        const GValue *value,
+                                        GParamSpec *pspec)
+{
+  thbdbBasicExistsResult *self = THBDB_BASIC_EXISTS_RESULT (object);
+
+  switch (property_id)
+  {
+    case PROP_THBDB_BASIC_EXISTS_RESULT_SUCCESS:
+      self->success = g_value_get_boolean (value);
+      self->__isset_success = TRUE;
+      break;
+
+    case PROP_THBDB_BASIC_EXISTS_RESULT_EXP:
+      if (self->exp != NULL)
+        g_object_unref (self->exp);
+      self->exp = g_value_dup_object (value);
+      self->__isset_exp = TRUE;
+      break;
+
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+      break;
+  }
+}
+
+static void
+thbdb_basic_exists_result_get_property (GObject *object,
+                                        guint property_id,
+                                        GValue *value,
+                                        GParamSpec *pspec)
+{
+  thbdbBasicExistsResult *self = THBDB_BASIC_EXISTS_RESULT (object);
+
+  switch (property_id)
+  {
+    case PROP_THBDB_BASIC_EXISTS_RESULT_SUCCESS:
+      g_value_set_boolean (value, self->success);
+      break;
+
+    case PROP_THBDB_BASIC_EXISTS_RESULT_EXP:
+      g_value_set_object (value, self->exp);
+      break;
+
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+      break;
+  }
+}
+
+static void 
+thbdb_basic_exists_result_instance_init (thbdbBasicExistsResult * object)
+{
+  /* satisfy -Wall */
+  THRIFT_UNUSED_VAR (object);
+  object->success = 0;
+  object->__isset_success = FALSE;
+  object->exp = NULL;
+  object->__isset_exp = FALSE;
+}
+
+static void 
+thbdb_basic_exists_result_finalize (GObject *object)
+{
+  thbdbBasicExistsResult *tobject = THBDB_BASIC_EXISTS_RESULT (object);
+
+  /* satisfy -Wall in case we don't use tobject */
+  THRIFT_UNUSED_VAR (tobject);
+  if (tobject->exp != NULL)
+  {
+    g_object_unref(tobject->exp);
+    tobject->exp = NULL;
+  }
+}
+
+static void
+thbdb_basic_exists_result_class_init (thbdbBasicExistsResultClass * cls)
+{
+  GObjectClass *gobject_class = G_OBJECT_CLASS (cls);
+  ThriftStructClass *struct_class = THRIFT_STRUCT_CLASS (cls);
+
+  struct_class->read = thbdb_basic_exists_result_read;
+  struct_class->write = thbdb_basic_exists_result_write;
+
+  gobject_class->finalize = thbdb_basic_exists_result_finalize;
+  gobject_class->get_property = thbdb_basic_exists_result_get_property;
+  gobject_class->set_property = thbdb_basic_exists_result_set_property;
+
+  g_object_class_install_property
+    (gobject_class,
+     PROP_THBDB_BASIC_EXISTS_RESULT_SUCCESS,
+     g_param_spec_boolean ("success",
+                           NULL,
+                           NULL,
+                           FALSE,
+                           G_PARAM_READWRITE));
+
+  g_object_class_install_property
+    (gobject_class,
+     PROP_THBDB_BASIC_EXISTS_RESULT_EXP,
+     g_param_spec_object ("exp",
+                         NULL,
+                         NULL,
+                         THBDB_TYPE_INVALID_OPERATION,
+                         G_PARAM_READWRITE));
+}
+
+GType
+thbdb_basic_exists_result_get_type (void)
+{
+  static GType type = 0;
+
+  if (type == 0) 
+  {
+    static const GTypeInfo type_info = 
+    {
+      sizeof (thbdbBasicExistsResultClass),
+      NULL, /* base_init */
+      NULL, /* base_finalize */
+      (GClassInitFunc) thbdb_basic_exists_result_class_init,
+      NULL, /* class_finalize */
+      NULL, /* class_data */
+      sizeof (thbdbBasicExistsResult),
+      0, /* n_preallocs */
+      (GInstanceInitFunc) thbdb_basic_exists_result_instance_init,
+      NULL, /* value_table */
+    };
+
+    type = g_type_register_static (THRIFT_TYPE_STRUCT, 
+                                   "thbdbBasicExistsResultType",
+                                   &type_info, 0);
+  }
+
+  return type;
+}
+
 enum _thbdbBasicGetArgsProperties
 {
   PROP_THBDB_BASIC_GET_ARGS_0,
@@ -4349,6 +4883,383 @@ thbdb_basic_hello_result_get_type (void)
 
     type = g_type_register_static (THRIFT_TYPE_STRUCT, 
                                    "thbdbBasicHelloResultType",
+                                   &type_info, 0);
+  }
+
+  return type;
+}
+
+/* reads a basic_get_status_args object */
+static gint32
+thbdb_basic_get_status_args_read (ThriftStruct *object, ThriftProtocol *protocol, GError **error)
+{
+  gint32 ret;
+  gint32 xfer = 0;
+  gchar *name = NULL;
+  ThriftType ftype;
+  gint16 fid;
+  guint32 len = 0;
+  gpointer data = NULL;
+  thbdbBasicGetStatusArgs * this_object = THBDB_BASIC_GET_STATUS_ARGS(object);
+
+  /* satisfy -Wall in case these aren't used */
+  THRIFT_UNUSED_VAR (len);
+  THRIFT_UNUSED_VAR (data);
+  THRIFT_UNUSED_VAR (this_object);
+
+  /* read the struct begin marker */
+  if ((ret = thrift_protocol_read_struct_begin (protocol, &name, error)) < 0)
+  {
+    if (name) g_free (name);
+    return -1;
+  }
+  xfer += ret;
+  if (name) g_free (name);
+  name = NULL;
+
+  /* read the struct fields */
+  while (1)
+  {
+    /* read the beginning of a field */
+    if ((ret = thrift_protocol_read_field_begin (protocol, &name, &ftype, &fid, error)) < 0)
+    {
+      if (name) g_free (name);
+      return -1;
+    }
+    xfer += ret;
+    if (name) g_free (name);
+    name = NULL;
+
+    /* break if we get a STOP field */
+    if (ftype == T_STOP)
+    {
+      break;
+    }
+
+    switch (fid)
+    {
+      default:
+        if ((ret = thrift_protocol_skip (protocol, ftype, error)) < 0)
+          return -1;
+        xfer += ret;
+        break;
+    }
+    if ((ret = thrift_protocol_read_field_end (protocol, error)) < 0)
+      return -1;
+    xfer += ret;
+  }
+
+  if ((ret = thrift_protocol_read_struct_end (protocol, error)) < 0)
+    return -1;
+  xfer += ret;
+
+  return xfer;
+}
+
+static gint32
+thbdb_basic_get_status_args_write (ThriftStruct *object, ThriftProtocol *protocol, GError **error)
+{
+  gint32 ret;
+  gint32 xfer = 0;
+
+  thbdbBasicGetStatusArgs * this_object = THBDB_BASIC_GET_STATUS_ARGS(object);
+  THRIFT_UNUSED_VAR (this_object);
+  if ((ret = thrift_protocol_write_struct_begin (protocol, "BasicGetStatusArgs", error)) < 0)
+    return -1;
+  xfer += ret;
+  if ((ret = thrift_protocol_write_field_stop (protocol, error)) < 0)
+    return -1;
+  xfer += ret;
+  if ((ret = thrift_protocol_write_struct_end (protocol, error)) < 0)
+    return -1;
+  xfer += ret;
+
+  return xfer;
+}
+
+static void 
+thbdb_basic_get_status_args_instance_init (thbdbBasicGetStatusArgs * object)
+{
+  /* satisfy -Wall */
+  THRIFT_UNUSED_VAR (object);
+}
+
+static void 
+thbdb_basic_get_status_args_finalize (GObject *object)
+{
+  thbdbBasicGetStatusArgs *tobject = THBDB_BASIC_GET_STATUS_ARGS (object);
+
+  /* satisfy -Wall in case we don't use tobject */
+  THRIFT_UNUSED_VAR (tobject);
+}
+
+static void
+thbdb_basic_get_status_args_class_init (thbdbBasicGetStatusArgsClass * cls)
+{
+  GObjectClass *gobject_class = G_OBJECT_CLASS (cls);
+  ThriftStructClass *struct_class = THRIFT_STRUCT_CLASS (cls);
+
+  struct_class->read = thbdb_basic_get_status_args_read;
+  struct_class->write = thbdb_basic_get_status_args_write;
+
+  gobject_class->finalize = thbdb_basic_get_status_args_finalize;
+}
+
+GType
+thbdb_basic_get_status_args_get_type (void)
+{
+  static GType type = 0;
+
+  if (type == 0) 
+  {
+    static const GTypeInfo type_info = 
+    {
+      sizeof (thbdbBasicGetStatusArgsClass),
+      NULL, /* base_init */
+      NULL, /* base_finalize */
+      (GClassInitFunc) thbdb_basic_get_status_args_class_init,
+      NULL, /* class_finalize */
+      NULL, /* class_data */
+      sizeof (thbdbBasicGetStatusArgs),
+      0, /* n_preallocs */
+      (GInstanceInitFunc) thbdb_basic_get_status_args_instance_init,
+      NULL, /* value_table */
+    };
+
+    type = g_type_register_static (THRIFT_TYPE_STRUCT, 
+                                   "thbdbBasicGetStatusArgsType",
+                                   &type_info, 0);
+  }
+
+  return type;
+}
+
+enum _thbdbBasicGetStatusResultProperties
+{
+  PROP_THBDB_BASIC_GET_STATUS_RESULT_0,
+  PROP_THBDB_BASIC_GET_STATUS_RESULT_SUCCESS
+};
+
+/* reads a basic_get_status_result object */
+static gint32
+thbdb_basic_get_status_result_read (ThriftStruct *object, ThriftProtocol *protocol, GError **error)
+{
+  gint32 ret;
+  gint32 xfer = 0;
+  gchar *name = NULL;
+  ThriftType ftype;
+  gint16 fid;
+  guint32 len = 0;
+  gpointer data = NULL;
+  thbdbBasicGetStatusResult * this_object = THBDB_BASIC_GET_STATUS_RESULT(object);
+
+  /* satisfy -Wall in case these aren't used */
+  THRIFT_UNUSED_VAR (len);
+  THRIFT_UNUSED_VAR (data);
+  THRIFT_UNUSED_VAR (this_object);
+
+  /* read the struct begin marker */
+  if ((ret = thrift_protocol_read_struct_begin (protocol, &name, error)) < 0)
+  {
+    if (name) g_free (name);
+    return -1;
+  }
+  xfer += ret;
+  if (name) g_free (name);
+  name = NULL;
+
+  /* read the struct fields */
+  while (1)
+  {
+    /* read the beginning of a field */
+    if ((ret = thrift_protocol_read_field_begin (protocol, &name, &ftype, &fid, error)) < 0)
+    {
+      if (name) g_free (name);
+      return -1;
+    }
+    xfer += ret;
+    if (name) g_free (name);
+    name = NULL;
+
+    /* break if we get a STOP field */
+    if (ftype == T_STOP)
+    {
+      break;
+    }
+
+    switch (fid)
+    {
+      case 0:
+        if (ftype == T_I32)
+        {
+          if ((ret = thrift_protocol_read_i32 (protocol, &this_object->success, error)) < 0)
+            return -1;
+          xfer += ret;
+          this_object->__isset_success = TRUE;
+        } else {
+          if ((ret = thrift_protocol_skip (protocol, ftype, error)) < 0)
+            return -1;
+          xfer += ret;
+        }
+        break;
+      default:
+        if ((ret = thrift_protocol_skip (protocol, ftype, error)) < 0)
+          return -1;
+        xfer += ret;
+        break;
+    }
+    if ((ret = thrift_protocol_read_field_end (protocol, error)) < 0)
+      return -1;
+    xfer += ret;
+  }
+
+  if ((ret = thrift_protocol_read_struct_end (protocol, error)) < 0)
+    return -1;
+  xfer += ret;
+
+  return xfer;
+}
+
+static gint32
+thbdb_basic_get_status_result_write (ThriftStruct *object, ThriftProtocol *protocol, GError **error)
+{
+  gint32 ret;
+  gint32 xfer = 0;
+
+  thbdbBasicGetStatusResult * this_object = THBDB_BASIC_GET_STATUS_RESULT(object);
+  THRIFT_UNUSED_VAR (this_object);
+  if ((ret = thrift_protocol_write_struct_begin (protocol, "BasicGetStatusResult", error)) < 0)
+    return -1;
+  xfer += ret;
+  if (this_object->__isset_success == TRUE) {
+    if ((ret = thrift_protocol_write_field_begin (protocol, "success", T_I32, 0, error)) < 0)
+      return -1;
+    xfer += ret;
+    if ((ret = thrift_protocol_write_i32 (protocol, this_object->success, error)) < 0)
+      return -1;
+    xfer += ret;
+
+    if ((ret = thrift_protocol_write_field_end (protocol, error)) < 0)
+      return -1;
+    xfer += ret;
+  }
+  if ((ret = thrift_protocol_write_field_stop (protocol, error)) < 0)
+    return -1;
+  xfer += ret;
+  if ((ret = thrift_protocol_write_struct_end (protocol, error)) < 0)
+    return -1;
+  xfer += ret;
+
+  return xfer;
+}
+
+static void
+thbdb_basic_get_status_result_set_property (GObject *object,
+                                            guint property_id,
+                                            const GValue *value,
+                                            GParamSpec *pspec)
+{
+  thbdbBasicGetStatusResult *self = THBDB_BASIC_GET_STATUS_RESULT (object);
+
+  switch (property_id)
+  {
+    case PROP_THBDB_BASIC_GET_STATUS_RESULT_SUCCESS:
+      self->success = g_value_get_int (value);
+      self->__isset_success = TRUE;
+      break;
+
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+      break;
+  }
+}
+
+static void
+thbdb_basic_get_status_result_get_property (GObject *object,
+                                            guint property_id,
+                                            GValue *value,
+                                            GParamSpec *pspec)
+{
+  thbdbBasicGetStatusResult *self = THBDB_BASIC_GET_STATUS_RESULT (object);
+
+  switch (property_id)
+  {
+    case PROP_THBDB_BASIC_GET_STATUS_RESULT_SUCCESS:
+      g_value_set_int (value, self->success);
+      break;
+
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+      break;
+  }
+}
+
+static void 
+thbdb_basic_get_status_result_instance_init (thbdbBasicGetStatusResult * object)
+{
+  /* satisfy -Wall */
+  THRIFT_UNUSED_VAR (object);
+  object->success = 0;
+  object->__isset_success = FALSE;
+}
+
+static void 
+thbdb_basic_get_status_result_finalize (GObject *object)
+{
+  thbdbBasicGetStatusResult *tobject = THBDB_BASIC_GET_STATUS_RESULT (object);
+
+  /* satisfy -Wall in case we don't use tobject */
+  THRIFT_UNUSED_VAR (tobject);
+}
+
+static void
+thbdb_basic_get_status_result_class_init (thbdbBasicGetStatusResultClass * cls)
+{
+  GObjectClass *gobject_class = G_OBJECT_CLASS (cls);
+  ThriftStructClass *struct_class = THRIFT_STRUCT_CLASS (cls);
+
+  struct_class->read = thbdb_basic_get_status_result_read;
+  struct_class->write = thbdb_basic_get_status_result_write;
+
+  gobject_class->finalize = thbdb_basic_get_status_result_finalize;
+  gobject_class->get_property = thbdb_basic_get_status_result_get_property;
+  gobject_class->set_property = thbdb_basic_get_status_result_set_property;
+
+  g_object_class_install_property
+    (gobject_class,
+     PROP_THBDB_BASIC_GET_STATUS_RESULT_SUCCESS,
+     g_param_spec_int ("success",
+                       NULL,
+                       NULL,
+                       G_MININT32,
+                       G_MAXINT32,
+                       0,
+                       G_PARAM_READWRITE));
+}
+
+GType
+thbdb_basic_get_status_result_get_type (void)
+{
+  static GType type = 0;
+
+  if (type == 0) 
+  {
+    static const GTypeInfo type_info = 
+    {
+      sizeof (thbdbBasicGetStatusResultClass),
+      NULL, /* base_init */
+      NULL, /* base_finalize */
+      (GClassInitFunc) thbdb_basic_get_status_result_class_init,
+      NULL, /* class_finalize */
+      NULL, /* class_data */
+      sizeof (thbdbBasicGetStatusResult),
+      0, /* n_preallocs */
+      (GInstanceInitFunc) thbdb_basic_get_status_result_instance_init,
+      NULL, /* value_table */
+    };
+
+    type = g_type_register_static (THRIFT_TYPE_STRUCT, 
+                                   "thbdbBasicGetStatusResultType",
                                    &type_info, 0);
   }
 

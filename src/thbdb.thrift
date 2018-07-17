@@ -54,23 +54,28 @@ enum ErrorCode {
 #
 # ThBDB I/F list
 #
-# put      :Put an item on the KVS
-# putAsync :Put an item on the KVS ( Non-blocking mode )
-# get      :Get an item on the KVS
-# remove   :Remove an from the KVS
-# getKeys  :List keys from the KVS
+# put       :Puts an item on the KVS
+# putAsync  :Puts an item on the KVS ( Non-blocking mode )
+# get       :Gets an item on the KVS
+# remove    :Removes an item from the KVS
+# getKeys   :List keys from the KVS
 #
-# ping     :Check the KVS if it is alive
-# hello    :Sample implementation
+# ping      :Checks the KVS if it is alive
+# hello     :Sample implementation
+#
+# getStatus :Returns ThBDB status code.
 #
 service Basic
 {
      void put( 1:string key, 2:string value ) throws (1:InvalidOperation exp ) ,
      oneway void putAsync( 1:string key, 2:string value )  ,
+     bool exists( 1:string key ) throws (1:InvalidOperation exp ),
      string  get( 1:string key ) throws (1:InvalidOperation exp ),
      void remove( 1:string key ) throws (1:InvalidOperation exp ),
      Keys getKeys() throws (1:InvalidOperation exp ),
      
      void ping(),
-     string hello(1:string arg)
+     string hello(1:string arg),
+
+     i32 getStatus()
 }
