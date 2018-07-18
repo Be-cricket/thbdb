@@ -21,7 +21,7 @@ u_int32_t put_on_bdb( char* key, int key_len, char* value, int value_len);
 
 u_int32_t get_from_bdb( char* key,int key_len , char** value );
 
-u_int32_t remove_from_bdb( char* key );
+u_int32_t remove_from_bdb( char* key,int key_len );
 
 u_int32_t exists_on_bdb( char* key,int key_len , int* status );
 

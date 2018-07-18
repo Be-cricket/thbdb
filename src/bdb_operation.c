@@ -1,9 +1,9 @@
 /*
- * This file is a sample program.
- * Written by M.Yasaka on 7/8/2018
+ * ThBDB : The Berkeley DB with Thrift.
+ * Written by masahi on 7/8/2018
  *
  * bdb_operation.c
- * This file contains the bdb's initializing and finalizing operations for the bdb.
+ * This file contains the bdb's basic operations for the Berkeley DB (Hash mode KVS).
  */
 
 #include <sys/types.h>
@@ -235,10 +235,12 @@ u_int32_t get_from_bdb( char* key,int key_len , char** value){
    * Try to get a key/value item from the BDB. 
    */
   ret = dbp->get(dbp, NULL, &key_buf, &value_buf, 0);
-  if ( ret == 0 || ret == DB_NOTFOUND ){
+  if ( ret == 0 ){
+    /* Nothing to do */
+  }else if ( ret == DB_NOTFOUND ){
      /** Key/Value pair is not found in the BDB */
-     /*  The DB_NOTFOUND is normal. */
-    ret = 0;
+     /*  The DB_NOTFOUND is not error. */
+    ret = THBDB_DB_NOTFOUND_ERROR;
   }else{
     /*
      * Some kind of error was detected during the attempt to
@@ -258,6 +260,57 @@ u_int32_t get_from_bdb( char* key,int key_len , char** value){
 
 
 /**
+ *
+ * Remove a key/value pair from the internal bdb.
+ *
+ */
+u_int32_t remove_from_bdb( char* key,int key_len ){
+
+  u_int32_t ret;
+  DBT key_buf;        /* The key to dbp->get(). */
+  
+  /** Check the bdb handle */
+  if (!dbp ) {
+    return THBDB_DB_NOT_OPENED_ERROR;
+  }
+
+  /*           
+   * Insert records into the database, where the key is the user input 
+   * and the data is the user input in reverse order.
+   * Zeroing the DBTs prepares them for the dbp->put() calls below. 
+   */
+  memset(&key_buf, 0, sizeof(DBT));
+
+  key_buf.data = key;
+  key_buf.size = (u_int32_t)key_len;
+    
+  /*     
+   * Try to delete a key/value item from the BDB. 
+   */
+  ret = dbp->del(dbp, NULL, &key_buf, 0);
+  if ( ret == 0 ){
+    /* Nothing to do */
+  }else if ( ret == DB_NOTFOUND ){
+     /** Key/Value pair is not found in the BDB */
+     /*  The DB_NOTFOUND is not error. */
+    ret = THBDB_DB_NOTFOUND_ERROR;
+  }else{
+    /*
+     * Some kind of error was detected during the attempt to
+     * insert the record. The err() function is printf-like.
+     */
+    dbp->err(dbp, ret, "del(%s)",
+             PROGRAM_NAME, key);
+  }
+
+  return ret;
+
+}
+
+
+
+/**
+ *
  * Closes internal bdb.
  *
  */

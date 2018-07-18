@@ -228,14 +228,44 @@ gboolean thbdb_basicimpl_handler_get (thbdbBasicIf * iface, gchar ** _return, co
 /**
  *
  * Removes data that the key specified  from the internal bdb.
- * Under construction.
  *
  */
 gboolean thbdb_basicimpl_handler_remove (thbdbBasicIf * iface, const gchar * key, thbdbInvalidOperation ** exp, GError ** error)
 {
+  THRIFT_UNUSED_VAR (iface);
+  THRIFT_UNUSED_VAR (error);
   g_return_val_if_fail (THBDB_IS_BASIC_HANDLER (iface), FALSE);
 
-  return FALSE;
+  //@@@
+  puts (" ^^ remove() ^^ ");
+
+  
+  int ret = THBDB_NORMAL;
+  GString* gkey;
+  int returnValue = TRUE;
+  
+  gkey = g_string_new( key ); 
+  ret = remove_from_bdb( 
+                      gkey->str,
+                      gkey->len
+                       );
+  if( ret != 0 ){
+    g_set_error(
+                error,
+                G_THBDB_ERROR,
+                ret,
+                "An error is occered under executing exists() CODE=(%d)",
+                ret
+                );
+    
+    returnValue = FALSE;
+  }
+
+  /* Free memory(gstring)  */
+  if( gkey )
+    g_string_free( gkey,FALSE );
+
+  return returnValue;
 }
 
 /**
@@ -324,12 +354,11 @@ thbdb_basicimpl_handler_class_init (ThbdbBasicimplHandlerClass *klass)
     thbdb_basicimpl_handler_exists;
   thbdb_basic_handler_class->get =
     thbdb_basicimpl_handler_get;
+  thbdb_basic_handler_class->remove =
+    thbdb_basicimpl_handler_remove;
 }
 
 
 /* That ends the implementation of ThbdbBasicimplHandler.
    Everything below is fairly generic code that sets up a minimal
    Thrift server for Thbdb clients. */
-
-
-
