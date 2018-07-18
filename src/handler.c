@@ -28,9 +28,9 @@
 #include "handler.h"
 
 
-/* ---------------------------------------------------------------- */
-
-/* The implementation of ThbdbBasicimplHandler follows. */
+/* ------------------------------------------------------------------------------------- */
+/*                 The implementation of ThbdbBasicimplHandler follows.                  */
+/* -----------------------------  API Handlers (START)---------------------------------- */
 
 G_DEFINE_TYPE (ThbdbBasicimplHandler,
                thbdb_basicimpl_handler,
@@ -46,6 +46,11 @@ G_DEFINE_TYPE (ThbdbBasicimplHandler,
    set. (Methods should not return FALSE without first setting the
    error parameter.) */
 
+/**
+ *
+ * A sample implementation.
+ * 
+ */
 static gboolean
 thbdb_basicimpl_handler_hello(thbdbBasicIf * iface, gchar ** _return, const gchar * arg, GError ** error)
 {
@@ -163,6 +168,111 @@ gboolean thbdb_basicimpl_handler_exists (thbdbBasicIf * iface, gboolean* _return
 }
 
 
+/**
+ * Put a key/value pair (async-mode).
+ * Under construction.
+ */
+gboolean thbdb_basicimpl_handler_put_async (thbdbBasicIf * iface, const gchar * key, const gchar * value, GError ** error)
+{
+
+  return FALSE;
+}
+
+/**
+ *  Return(_return) value from the internal bdb.
+ *
+ */
+gboolean thbdb_basicimpl_handler_get (thbdbBasicIf * iface, gchar ** _return, const gchar * key, thbdbInvalidOperation ** exp, GError ** error)
+{
+  THRIFT_UNUSED_VAR (iface);
+  THRIFT_UNUSED_VAR (error);
+  g_return_val_if_fail (THBDB_IS_BASIC_HANDLER (iface), FALSE);
+
+  //@@@
+  puts (" ^^ get() ^^ ");
+
+  
+  int ret = THBDB_NORMAL;
+  GString* gkey;
+  char* value;
+  int returnValue = TRUE;
+  
+  gkey = g_string_new( key ); 
+  ret = get_from_bdb( 
+                      gkey->str,
+                      gkey->len,
+                      &value
+                       );
+  if( ret != 0 ){
+    g_set_error(
+                error,
+                G_THBDB_ERROR,
+                ret,
+                "An error is occered under executing exists() CODE=(%d)",
+                ret
+                );
+    
+    returnValue = FALSE;
+  }else{
+    *_return = value;
+  }
+
+  /* Free memory(gstring)  */
+  if( gkey )
+    g_string_free( gkey,FALSE );
+
+  return returnValue;
+
+}
+
+/**
+ *
+ * Removes data that the key specified  from the internal bdb.
+ * Under construction.
+ *
+ */
+gboolean thbdb_basicimpl_handler_remove (thbdbBasicIf * iface, const gchar * key, thbdbInvalidOperation ** exp, GError ** error)
+{
+  g_return_val_if_fail (THBDB_IS_BASIC_HANDLER (iface), FALSE);
+
+  return FALSE;
+}
+
+/**
+ * Returns ( _return ) a key list that the internal bdb has .
+ * Under construction.
+ */
+gboolean thbdb_basicimpl_handler_get_keys (thbdbBasicIf * iface, thbdbKeys ** _return, thbdbInvalidOperation ** exp, GError ** error)
+{
+  g_return_val_if_fail (THBDB_IS_BASIC_HANDLER (iface), FALSE);
+
+  return FALSE;
+}
+
+
+gboolean thbdb_basicimpl_handler_ping (thbdbBasicIf * iface, GError ** error)
+{
+  g_return_val_if_fail (THBDB_IS_BASIC_HANDLER (iface), FALSE);
+
+  return FALSE;
+}
+
+
+gboolean thbdb_basicimpl_handler_get_status (thbdbBasicIf * iface, gint32* _return, GError ** error)
+{
+  g_return_val_if_fail (THBDB_IS_BASIC_HANDLER (iface), FALSE);
+
+  return FALSE;
+}
+
+
+
+/*------------------------------  API Handlers (END)-----------------------------------*/
+
+
+
+
+
 /* THBDB basicimpl Handler's instance finalizer (destructor) */
 static void
 thbdb_basicimpl_handler_finalize (GObject *object)
@@ -212,6 +322,8 @@ thbdb_basicimpl_handler_class_init (ThbdbBasicimplHandlerClass *klass)
     thbdb_basicimpl_handler_put;
   thbdb_basic_handler_class->exists =
     thbdb_basicimpl_handler_exists;
+  thbdb_basic_handler_class->get =
+    thbdb_basicimpl_handler_get;
 }
 
 
