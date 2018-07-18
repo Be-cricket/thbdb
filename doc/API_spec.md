@@ -24,7 +24,7 @@ Following: API specification.
   Returns key list from the ThBDB.
   Key list contains all of keys in the ThBDB.
   
-### boolean exist( k:string )
+### boolean exists( k:string )
   Returns true if the specified key(k:string) exsists in the TbBDB.
 
 ## OPERATION:
