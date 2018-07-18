@@ -122,14 +122,44 @@ thbdb_basicimpl_handler_put (thbdbBasicIf * iface, const gchar * key, const gcha
  */
 gboolean thbdb_basicimpl_handler_exists (thbdbBasicIf * iface, gboolean* _return, const gchar * key, thbdbInvalidOperation ** exp, GError ** error)
 {
+  THRIFT_UNUSED_VAR (iface);
+  THRIFT_UNUSED_VAR (error);
   g_return_val_if_fail (THBDB_IS_BASIC_HANDLER (iface), FALSE);
 
   //@@@
   puts (" ^^ exists() ^^ ");
 
-  *_return = FALSE;
   
-  return TRUE;
+  int ret = THBDB_NORMAL;
+  GString* gkey;
+  int status; /* exists or not */
+  int returnValue = TRUE;
+  
+  gkey = g_string_new( key ); 
+  ret = exists_on_bdb( 
+                      gkey->str,
+                      gkey->len,
+                      &status
+                       );
+  if( ret != 0 ){
+    g_set_error(
+                error,
+                G_THBDB_ERROR,
+                ret,
+                "An error is occered under executing exists() CODE=(%d)",
+                ret
+                );
+    
+    returnValue = FALSE;
+  }else{
+    *_return = status;
+  }
+
+  /* Free memory(gstring)  */
+  if( gkey )
+    g_string_free( gkey,FALSE );
+
+  return returnValue;
 }
 
 

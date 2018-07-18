@@ -17,20 +17,22 @@ g_thbdb_error_quark (void);
 
 /** Following : Basic operations **/
 
-int put_on_bdb( char* key, int key_len, char* value, int value_len);
+u_int32_t put_on_bdb( char* key, int key_len, char* value, int value_len);
 
 char* get_from_bdb();
 
-int remove_from_bdb( char* key );
+u_int32_t remove_from_bdb( char* key );
+
+u_int32_t exists_on_bdb( char* key,int key_len , int* status);
 
 
 /** Following : Control operations **/
 
-int init_bdb();
+u_int32_t init_bdb();
 
-int close_bdb();
+u_int32_t close_bdb();
 
-int unlink_bdb();
+u_int32_t unlink_bdb();
 
 #define PROGRAM_NAME   "ThBDB"       /* The programe name used for error messages and ...  */
 #define BDB_FILENAME   "thbdb.db"    /* Default database filename */
