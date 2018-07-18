@@ -1,9 +1,9 @@
 /*
- * This file is a sample program.
- * Written by M.Yasaka on 7/8/2018
+ * ThBDB : The Berkeley DB with Thrift.
+ * Written by masahi on 7/8/2018
  *
  * bdb_operation.c
- * This file contains the bdb's initializing and finalizing operations for the bdb.
+ * This file contains the bdb's basic operations for the Berkeley DB (Hash mode KVS).
  */
 
 #include <sys/types.h>
@@ -33,9 +33,9 @@ DB *dbp = NULL;
  * Initializes the bdb that ThBDB contains.
  * This function is a sample implementation.
  */
-int init_bdb(){
+u_int32_t init_bdb(){
 
-  int ret;   /* Return code from the BDB */
+  u_int32_t ret;   /* Return code from the BDB */
   
   /* Create a database handle, to be configured, then opened. */
   if ((ret = db_create(&dbp, NULL, 0)) != 0) {
@@ -44,7 +44,7 @@ int init_bdb(){
     return (THBDB_DB_OPEN_ERROR);
   }
 
-  /*                           
+ /*                           
    * Prefix any error messages with the name of this program and a ':'.
    * It's PROGRAM_NAME "ThBDB" as defined in bdb_operation.h file. 
    * Setting the errfile to stderr is not necessary, since that is 
@@ -97,9 +97,9 @@ int init_bdb(){
 /**
  * Puts a pair of key/value on the BDB.
  */
-int put_on_bdb( char* key,int key_len, char* value, int value_len){
+u_int32_t put_on_bdb( char* key,int key_len, char* value, int value_len){
 
-  int ret = THBDB_NORMAL;
+  u_int32_t ret = THBDB_NORMAL;
   DBT key_buf;        /* The key to dbp->put(). */
   DBT value_buf;      /* The data to dbp->put(). */
 
@@ -145,16 +145,182 @@ int put_on_bdb( char* key,int key_len, char* value, int value_len){
 }
 
 /**
+ * Returns(status) TRUE if the specified key exists on BDB, False if it doesn't exists.
+ */
+u_int32_t exists_on_bdb( char* key,int key_len , int* status){
+
+  u_int32_t ret;
+  DBT key_buf;        /* The key to dbp->get(). */
+  DBT value_buf;      /* The data to dbp->get(). */
+  char* dummy = NULL;          /* dummy buffer for using get() function */
+  
+  /** Check the bdb handle */
+  if (!dbp ) {
+    return THBDB_DB_NOT_OPENED_ERROR;
+  }
+
+  /*           
+   * Insert records into the database, where the key is the user input 
+   * and the data is the user input in reverse order.
+   * Zeroing the DBTs prepares them for the dbp->put() calls below. 
+   */
+  memset(&key_buf, 0, sizeof(DBT));
+  memset(&value_buf, 0, sizeof(DBT));                                                                         
+  key_buf.data = key;
+  key_buf.size = (u_int32_t)key_len;
+  value_buf.data = dummy;
+  value_buf.size = (u_int32_t)sizeof(dummy);
+  value_buf.flags = DB_DBT_MALLOC;
+
+  /** Initializes status */
+  *status = FALSE;
+
+  /*     
+   * Try to get a key/value item from the BDB. 
+   */
+  ret = dbp->get(dbp, NULL, &key_buf, &value_buf, 0);
+  if ( ret == 0 ){
+    *status = TRUE;
+  }else if ( ret == DB_NOTFOUND ){
+     /** Key/Value pair is not found in the BDB */
+     /*  The DB_NOTFOUND is normal. */
+    ret = 0;
+  }else{
+    /*
+     * Some kind of error was detected during the attempt to
+     * insert the record. The err() function is printf-like.
+     */
+    dbp->err(dbp, ret, "exists(%s)",
+             PROGRAM_NAME, key);
+  }
+
+  /* Free the allocated dummy buffer. */
+  if( value_buf.data != NULL )
+    free( value_buf.data );
+  
+  return ret;
+
+}
+
+/**
+ * Returns( value ) if  the specified key exists on BDB.
+ */
+u_int32_t get_from_bdb( char* key,int key_len , char** value){
+
+  u_int32_t ret;
+  DBT key_buf;        /* The key to dbp->get(). */
+  DBT value_buf;      /* The data to dbp->get(). */
+  char* dummy = NULL;          /* dummy buffer for using get() function */
+  
+  /** Check the bdb handle */
+  if (!dbp ) {
+    return THBDB_DB_NOT_OPENED_ERROR;
+  }
+
+  /*           
+   * Insert records into the database, where the key is the user input 
+   * and the data is the user input in reverse order.
+   * Zeroing the DBTs prepares them for the dbp->put() calls below. 
+   */
+  memset(&key_buf, 0, sizeof(DBT));
+  memset(&value_buf, 0, sizeof(DBT));                                                                         
+  key_buf.data = key;
+  key_buf.size = (u_int32_t)key_len;
+  value_buf.data = dummy;
+  value_buf.size = (u_int32_t)sizeof(dummy);
+  value_buf.flags = DB_DBT_MALLOC;
+
+  
+  /*     
+   * Try to get a key/value item from the BDB. 
+   */
+  ret = dbp->get(dbp, NULL, &key_buf, &value_buf, 0);
+  if ( ret == 0 ){
+    /* Nothing to do */
+  }else if ( ret == DB_NOTFOUND ){
+     /** Key/Value pair is not found in the BDB */
+     /*  The DB_NOTFOUND is not error. */
+    ret = THBDB_DB_NOTFOUND_ERROR;
+  }else{
+    /*
+     * Some kind of error was detected during the attempt to
+     * insert the record. The err() function is printf-like.
+     */
+    dbp->err(dbp, ret, "get(%s)",
+             PROGRAM_NAME, key);
+  }
+
+  if( value_buf.data != NULL ){
+    *value = value_buf.data;
+  }
+  
+  return ret;
+
+}
+
+
+/**
+ *
+ * Remove a key/value pair from the internal bdb.
+ *
+ */
+u_int32_t remove_from_bdb( char* key,int key_len ){
+
+  u_int32_t ret;
+  DBT key_buf;        /* The key to dbp->get(). */
+  
+  /** Check the bdb handle */
+  if (!dbp ) {
+    return THBDB_DB_NOT_OPENED_ERROR;
+  }
+
+  /*           
+   * Insert records into the database, where the key is the user input 
+   * and the data is the user input in reverse order.
+   * Zeroing the DBTs prepares them for the dbp->put() calls below. 
+   */
+  memset(&key_buf, 0, sizeof(DBT));
+
+  key_buf.data = key;
+  key_buf.size = (u_int32_t)key_len;
+    
+  /*     
+   * Try to delete a key/value item from the BDB. 
+   */
+  ret = dbp->del(dbp, NULL, &key_buf, 0);
+  if ( ret == 0 ){
+    /* Nothing to do */
+  }else if ( ret == DB_NOTFOUND ){
+     /** Key/Value pair is not found in the BDB */
+     /*  The DB_NOTFOUND is not error. */
+    ret = THBDB_DB_NOTFOUND_ERROR;
+  }else{
+    /*
+     * Some kind of error was detected during the attempt to
+     * insert the record. The err() function is printf-like.
+     */
+    dbp->err(dbp, ret, "del(%s)",
+             PROGRAM_NAME, key);
+  }
+
+  return ret;
+
+}
+
+
+
+/**
+ *
  * Closes internal bdb.
  *
  */
-int close_bdb(){
+u_int32_t close_bdb(){
 
   if( !dbp )
     return THBDB_DB_NOT_OPENED_ERROR;
   
   /*
-   * Close the database. Inside the close() call Berkeley DB flushes the
+   * Close pthe database. Inside the close() call Berkeley DB flushes the
    * database cache out to the filesystem. The DB_NOSYNC option is ignored
    * in cases such as this one, which do not use an explicitly created       
    * environment (DB_ENV).                                                      
@@ -163,3 +329,4 @@ int close_bdb(){
 
   return THBDB_NORMAL;
 }
+
