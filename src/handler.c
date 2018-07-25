@@ -279,12 +279,17 @@ gboolean thbdb_basicimpl_handler_get_keys (thbdbBasicIf * iface, thbdbKeys ** _r
   return FALSE;
 }
 
-
-gboolean thbdb_basicimpl_handler_ping (thbdbBasicIf * iface, GError ** error)
+static gboolean 
+thbdb_basicimpl_handler_ping (thbdbBasicIf * iface, GError ** error)
 {
+  THRIFT_UNUSED_VAR (iface);
+  THRIFT_UNUSED_VAR (error);
   g_return_val_if_fail (THBDB_IS_BASIC_HANDLER (iface), FALSE);
 
-  return FALSE;
+  //@@@
+  puts (" ^^ ping() ^^ ");
+  return TRUE;
+
 }
 
 
@@ -356,6 +361,8 @@ thbdb_basicimpl_handler_class_init (ThbdbBasicimplHandlerClass *klass)
     thbdb_basicimpl_handler_get;
   thbdb_basic_handler_class->remove =
     thbdb_basicimpl_handler_remove;
+  thdbd_basic_handler_class->ping = 
+    thbdb_basicimpl_handler_ping;
 }
 
 
