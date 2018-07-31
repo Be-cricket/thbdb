@@ -1,32 +1,32 @@
 /*
- * This file is a sample program.
- * Written by M.Yasaka on 6/17/2018
- *
  * handler.h
  * Handling the basic operation for the bdb.
+ *
+ * Written by M.Yasaka on 6/17/2018
  */
 #ifndef HANDLER_H
 #define HANDLER_H
 
 #include <thrift/c_glib/processor/thrift_dispatch_processor.h>
-
 //#include "gen-cglib/thbdb_thbdb_types.h"
 
+/* --------------------------------------------------------------------- */
+/*         Following: Values returned by handler methods.                */
+/* --------------------------------------------------------------------- */
+#define THBDB_STATUS_DB_RUNNING 1
+#define THBDB_STATUS_DB_NOT_OPEND  2    
+
+
+/* --------------------------------------------------------------------- */
+/*         Following: The declareration for GLib                         */
+/* --------------------------------------------------------------------- */
 G_BEGIN_DECLS
 
 /* In the C (GLib) implementation of Thrift, the actual work done by a
    server---that is, the code that runs when a client invokes a
    service method---is defined in a separate "handler" class that
    implements the service interface. Here we define the
-   TutorialCalculatorHandler class, which implements the CalculatorIf
-   interface and provides the behavior expected by tutorial clients.
-   (Typically this code would be placed in its own module but for
-   clarity this tutorial is presented entirely in a single file.)
-
-   For each service the Thrift compiler generates an abstract base
-   class from which handler implementations should inherit. In our
-   case TutorialCalculatorHandler inherits from CalculatorHandler,
-   defined in gen-c_glib/calculator.h.
+   ThbdbBasicImplHandler class
 
    If you're new to GObject, try not to be intimidated by the quantity
    of code here---much of it is boilerplate and can mostly be
@@ -41,7 +41,7 @@ G_BEGIN_DECLS
   (G_TYPE_CHECK_INSTANCE_CAST ((obj),                                   \
                                TYPE_THBDB_BASICIMPL_HANDLER,        \
                                ThbdbBasicimplHandler))
-#define TUTORIAL_CALCULATOR_HANDLER_CLASS(c)                    \
+#define THBDB_BASICIMPL_HANDLER_CLASS(c)                    \
   (G_TYPE_CHECK_CLASS_CAST ((c),                                \
                             TYPE_THBDB_BASICIMPL_HANDLER,   \
                             ThbdbBasicimplHandlerClass))

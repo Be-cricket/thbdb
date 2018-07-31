@@ -1,9 +1,8 @@
 /*
- * This file is a sample program.
- * Written by M.Yasaka on 6/17/2018
- *
  * handler.c
  * Handling the basic operation for the bdb.
+ *
+ * Written by M.Yasaka on 6/17/2018
  */
 
 #include <signal.h>
@@ -49,6 +48,7 @@ G_DEFINE_TYPE (ThbdbBasicimplHandler,
 /**
  *
  * A sample implementation.
+ * "Hello" api.
  * 
  */
 static gboolean
@@ -238,7 +238,6 @@ gboolean thbdb_basicimpl_handler_remove (thbdbBasicIf * iface, const gchar * key
 
   //@@@
   puts (" ^^ remove() ^^ ");
-
   
   int ret = THBDB_NORMAL;
   GString* gkey;
@@ -305,9 +304,6 @@ gboolean thbdb_basicimpl_handler_get_status (thbdbBasicIf * iface, gint32* _retu
 /*------------------------------  API Handlers (END)-----------------------------------*/
 
 
-
-
-
 /* THBDB basicimpl Handler's instance finalizer (destructor) */
 static void
 thbdb_basicimpl_handler_finalize (GObject *object)
@@ -361,7 +357,7 @@ thbdb_basicimpl_handler_class_init (ThbdbBasicimplHandlerClass *klass)
     thbdb_basicimpl_handler_get;
   thbdb_basic_handler_class->remove =
     thbdb_basicimpl_handler_remove;
-  thdbd_basic_handler_class->ping = 
+  thbdb_basic_handler_class->ping = 
     thbdb_basicimpl_handler_ping;
 }
 
