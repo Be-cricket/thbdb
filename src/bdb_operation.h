@@ -25,6 +25,8 @@ u_int32_t remove_from_bdb( char* key,int key_len );
 
 u_int32_t exists_on_bdb( char* key,int key_len , int* status );
 
+u_int32_t is_null_bdb( int* status );
+
 
 /** Following : Control operations **/
 

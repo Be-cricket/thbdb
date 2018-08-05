@@ -278,6 +278,11 @@ gboolean thbdb_basicimpl_handler_get_keys (thbdbBasicIf * iface, thbdbKeys ** _r
   return FALSE;
 }
 
+/**
+ *
+ * Confirm reachability.
+ *
+ */
 static gboolean 
 thbdb_basicimpl_handler_ping (thbdbBasicIf * iface, GError ** error)
 {
@@ -291,12 +296,42 @@ thbdb_basicimpl_handler_ping (thbdbBasicIf * iface, GError ** error)
 
 }
 
-
+/**
+ *
+ * Returns a status that the internal bdb's status.
+ * Returns(_return) THBDB_STATUS_DB_RUNNING if BDB isn't null, THBDB_STATUS_DB_NOT_OPEND if BDB is null.
+ */
 gboolean thbdb_basicimpl_handler_get_status (thbdbBasicIf * iface, gint32* _return, GError ** error)
-{
+{ 
+  THRIFT_UNUSED_VAR (iface);
+  THRIFT_UNUSED_VAR (error);
   g_return_val_if_fail (THBDB_IS_BASIC_HANDLER (iface), FALSE);
 
-  return FALSE;
+  //@@@
+  puts (" ^^ get_status() ^^ ");
+      
+  int ret ;
+  int status; /* handled or not */
+  int returnValue = FALSE;
+
+   /** Initializes _return */
+  *_return = THBDB_STATUS_DB_NOT_OPEND;
+
+  /** Check the bdb is null */
+  ret = is_null_bdb( 
+                    &status
+                     );
+                       
+  if( ret == THBDB_NORMAL ){
+    if (status == TRUE ){
+      *_return = THBDB_STATUS_DB_NOT_OPEND;
+    } else {
+      *_return = THBDB_STATUS_DB_RUNNING;
+    }
+    returnValue = TRUE;
+  }
+
+  return returnValue;  
 }
 
 
@@ -359,6 +394,8 @@ thbdb_basicimpl_handler_class_init (ThbdbBasicimplHandlerClass *klass)
     thbdb_basicimpl_handler_remove;
   thbdb_basic_handler_class->ping = 
     thbdb_basicimpl_handler_ping;
+  thbdb_basic_handler_class->get_status = 
+    thbdb_basicimpl_handler_get_status;
 }
 
 
