@@ -330,3 +330,22 @@ u_int32_t close_bdb(){
   return THBDB_NORMAL;
 }
 
+/**
+ * Returns(status) TRUE if BDB is null, False if BDB isn't null.
+ */
+u_int32_t is_null_bdb( int* status ){
+
+  u_int32_t ret = THBDB_NORMAL;  
+  
+  /** Initializes status */
+  *status = TRUE;
+
+  /** Check the bdb is null */
+  if ( !dbp ) {
+    *status = TRUE;
+  } else {
+    *status = FALSE;
+  }
+  return ret;
+
+}
