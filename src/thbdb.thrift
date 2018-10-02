@@ -54,17 +54,16 @@ enum ErrorCode {
 #
 # ThBDB I/F list
 #
-# put       :Puts an item on the KVS
-# putAsync  :Puts an item on the KVS ( Non-blocking mode )
-# get       :Gets an item on the KVS
-# remove    :Removes an item from the KVS
-# getKeys   :List keys from the KVS
-#
-# ping      :Checks the KVS if it is alive
-# hello     :Sample implementation
-#
-# getStatus :Returns ThBDB status code.
-#
+# put               :Puts an item on the KVS
+# putAsync          :Puts an item on the KVS ( Non-blocking mode )
+# get               :Gets an item on the KVS
+# remove            :Removes an item from the KVS
+# getKeys           :List keys from the KVS
+# getKeysByPosition :List range keys from the KVS
+# ping              :Checks the KVS if it is alive
+# hello              :Sample implementation
+# getStatus :Returns the KVS status code
+# compact   :Returns Compact status code 
 service Basic
 {
      void put( 1:string key, 2:string value ) throws (1:InvalidOperation exp ) ,
@@ -73,9 +72,9 @@ service Basic
      string  get( 1:string key ) throws (1:InvalidOperation exp ),
      void remove( 1:string key ) throws (1:InvalidOperation exp ),
      Keys getKeys() throws (1:InvalidOperation exp ),
-     
+     Keys getKeysByPosition( 1:i32 position, 2:i32 size ) throws (1:InvalidOperation exp ),
      void ping(),
      string hello(1:string arg),
-
-     i32 getStatus()
+     i32 getStatus(),
+     i32 compact() throws (1:InvalidOperation exp )
 }
