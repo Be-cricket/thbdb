@@ -278,6 +278,11 @@ gboolean thbdb_basicimpl_handler_get_keys (thbdbBasicIf * iface, thbdbKeys ** _r
   return FALSE;
 }
 
+/**
+ *
+ * Confirm reachability.
+ *
+ */
 static gboolean 
 thbdb_basicimpl_handler_ping (thbdbBasicIf * iface, GError ** error)
 {
@@ -291,15 +296,134 @@ thbdb_basicimpl_handler_ping (thbdbBasicIf * iface, GError ** error)
 
 }
 
-
+/**
+ *
+ * Returns a status that the internal bdb's status.
+ * Returns(_return) THBDB_STATUS_DB_RUNNING if BDB isn't null, THBDB_STATUS_DB_NOT_OPEND if BDB is null.
+ */
 gboolean thbdb_basicimpl_handler_get_status (thbdbBasicIf * iface, gint32* _return, GError ** error)
-{
+{ 
+  THRIFT_UNUSED_VAR (iface);
+  THRIFT_UNUSED_VAR (error);
   g_return_val_if_fail (THBDB_IS_BASIC_HANDLER (iface), FALSE);
 
-  return FALSE;
+  //@@@
+  puts (" ^^ get_status() ^^ ");
+      
+  int ret ;
+  int status; /* handled or not */
+  int returnValue = FALSE;
+
+   /** Initializes _return */
+  *_return = THBDB_STATUS_DB_NOT_OPEND;
+
+  /** Check the bdb is null */
+  ret = is_null_bdb( 
+                    &status
+                     );
+                       
+  if( ret == THBDB_NORMAL ){
+    if (status == TRUE ){
+      *_return = THBDB_STATUS_DB_NOT_OPEND;
+    } else {
+      *_return = THBDB_STATUS_DB_RUNNING;
+    }
+    returnValue = TRUE;
+  }
+
+  return returnValue;  
+}
+
+/**
+ *
+ * Returns(_return) a non-zero error code on DB->compact error code and 0 on success.
+ */
+gboolean thbdb_basicimpl_handler_compact (thbdbBasicIf *iface, gint32* _return, thbdbInvalidOperation ** exp, GError **error)
+{ 
+  THRIFT_UNUSED_VAR (iface);
+  THRIFT_UNUSED_VAR (error);
+  g_return_val_if_fail (THBDB_IS_BASIC_HANDLER (iface), FALSE);
+
+  //@@@
+  puts (" ^^ compact() ^^ ");
+  
+  int ret = THBDB_NORMAL;
+  int returnValue = FALSE;
+
+   /** Initializes _return */
+  *_return = 0;
+
+  /** Try to compact the bdb */
+  ret = compact_bdb( &_return );
+
+  if ( ret != THBDB_NORMAL ){
+
+      if (ret == THBDB_DB_NOT_OPENED_ERROR){
+        g_set_error(
+                error,
+                G_THBDB_ERROR,
+                THBDB_DB_NOT_OPENED_ERROR,
+                "An error is occered under executing compact(). A BDB contained in the ThBDB haven't been opened yet."
+                ); 
+      } else {
+
+        returnValue = TRUE;
+
+/*         // エラー発生時、エラー出力し処理を止める場合、g_set_errorを有効にする
+        g_set_error(
+                error,
+                G_THBDB_ERROR,
+                _return,
+                "An error is occered under executing compact() CODE=(%d)",
+                _return
+                ); 
+ */
+      } 
+    
+  } else {
+    returnValue = TRUE;
+  }
+ 
+  return returnValue;  
 }
 
 
+/**
+ * Returns ( _return ) a key list that the internal bdb has .
+ * Under construction.
+ */
+gboolean thbdb_basicimpl_handler_get_keys_by_position (thbdbBasicIf * iface, thbdbKeys ** _return, const gint32 position, const gint32 size, thbdbInvalidOperation ** exp, GError ** error)
+{
+  THRIFT_UNUSED_VAR (iface);
+  THRIFT_UNUSED_VAR (error);
+  g_return_val_if_fail (THBDB_IS_BASIC_HANDLER (iface), FALSE);
+
+  g_return_val_if_fail(*_return != NULL, FALSE);
+  g_return_val_if_fail(position >= 0, FALSE);
+  g_return_val_if_fail(size >= 0, FALSE);
+
+  //@@@
+  puts (" ^^ get_keys_by_position() ^^ ");
+
+  int ret = THBDB_NORMAL;
+  int returnValue = FALSE;
+
+  /* getKeys*/
+  ret = get_keys_from_bdb( position, size, *_return );
+
+  if( ret != THBDB_NORMAL ){
+    g_set_error(
+                error,
+                G_THBDB_ERROR,
+                ret,
+                "An error is occered under executing get_keys_by_position() CODE=(%d)",
+                ret
+                );
+  }else{
+    returnValue = TRUE;
+  }
+  return returnValue;
+}
 
 /*------------------------------  API Handlers (END)-----------------------------------*/
 
@@ -359,6 +483,12 @@ thbdb_basicimpl_handler_class_init (ThbdbBasicimplHandlerClass *klass)
     thbdb_basicimpl_handler_remove;
   thbdb_basic_handler_class->ping = 
     thbdb_basicimpl_handler_ping;
+  thbdb_basic_handler_class->get_status = 
+    thbdb_basicimpl_handler_get_status;
+  thbdb_basic_handler_class->get_keys_by_position =
+    thbdb_basicimpl_handler_get_keys_by_position;
+  thbdb_basic_handler_class->compact =
+    thbdb_basicimpl_handler_compact;
 }
 
 
