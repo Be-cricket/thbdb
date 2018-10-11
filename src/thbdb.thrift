@@ -1,7 +1,6 @@
 #!/usr/local/bin/thrift --java --c_glib --py
 # 
 
-
 namespace java jp.co.softbank.thbdb.thrift
 namespace c_glib  thbdb
 namespace py thbdb
@@ -29,7 +28,7 @@ struct ItemList{
 
 /**
  * Struct definition:
- * The return value of key() method.
+ * The return value of getKeys() method.
  */
 struct Keys{
   1: i32 numOfKeys,

@@ -427,6 +427,60 @@ GType thbdb_basic_get_keys_result_get_type (void);
 #define THBDB_IS_BASIC_GET_KEYS_RESULT_CLASS(c) (G_TYPE_CHECK_CLASS_TYPE ((c), THBDB_TYPE_BASIC_GET_KEYS_RESULT))
 #define THBDB_BASIC_GET_KEYS_RESULT_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), THBDB_TYPE_BASIC_GET_KEYS_RESULT, thbdbBasicGetKeysResultClass))
 
+/* struct BasicGetKeysByPositionArgs */
+struct _thbdbBasicGetKeysByPositionArgs
+{ 
+  ThriftStruct parent; 
+
+  /* public */
+  gint32 position;
+  gboolean __isset_position;
+  gint32 size;
+  gboolean __isset_size;
+};
+typedef struct _thbdbBasicGetKeysByPositionArgs thbdbBasicGetKeysByPositionArgs;
+
+struct _thbdbBasicGetKeysByPositionArgsClass
+{
+  ThriftStructClass parent;
+};
+typedef struct _thbdbBasicGetKeysByPositionArgsClass thbdbBasicGetKeysByPositionArgsClass;
+
+GType thbdb_basic_get_keys_by_position_args_get_type (void);
+#define THBDB_TYPE_BASIC_GET_KEYS_BY_POSITION_ARGS (thbdb_basic_get_keys_by_position_args_get_type())
+#define THBDB_BASIC_GET_KEYS_BY_POSITION_ARGS(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), THBDB_TYPE_BASIC_GET_KEYS_BY_POSITION_ARGS, thbdbBasicGetKeysByPositionArgs))
+#define THBDB_BASIC_GET_KEYS_BY_POSITION_ARGS_CLASS(c) (G_TYPE_CHECK_CLASS_CAST ((c), THBDB__TYPE_BASIC_GET_KEYS_BY_POSITION_ARGS, thbdbBasicGetKeysByPositionArgsClass))
+#define THBDB_IS_BASIC_GET_KEYS_BY_POSITION_ARGS(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), THBDB_TYPE_BASIC_GET_KEYS_BY_POSITION_ARGS))
+#define THBDB_IS_BASIC_GET_KEYS_BY_POSITION_ARGS_CLASS(c) (G_TYPE_CHECK_CLASS_TYPE ((c), THBDB_TYPE_BASIC_GET_KEYS_BY_POSITION_ARGS))
+#define THBDB_BASIC_GET_KEYS_BY_POSITION_ARGS_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), THBDB_TYPE_BASIC_GET_KEYS_BY_POSITION_ARGS, thbdbBasicGetKeysByPositionArgsClass))
+
+/* struct BasicGetKeysByPositionResult */
+struct _thbdbBasicGetKeysByPositionResult
+{ 
+  ThriftStruct parent; 
+
+  /* public */
+  thbdbKeys * success;
+  gboolean __isset_success;
+  thbdbInvalidOperation * exp;
+  gboolean __isset_exp;
+};
+typedef struct _thbdbBasicGetKeysByPositionResult thbdbBasicGetKeysByPositionResult;
+
+struct _thbdbBasicGetKeysByPositionResultClass
+{
+  ThriftStructClass parent;
+};
+typedef struct _thbdbBasicGetKeysByPositionResultClass thbdbBasicGetKeysByPositionResultClass;
+
+GType thbdb_basic_get_keys_by_position_result_get_type (void);
+#define THBDB_TYPE_BASIC_GET_KEYS_BY_POSITION_RESULT (thbdb_basic_get_keys_by_position_result_get_type())
+#define THBDB_BASIC_GET_KEYS_BY_POSITION_RESULT(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), THBDB_TYPE_BASIC_GET_KEYS_BY_POSITION_RESULT, thbdbBasicGetKeysByPositionResult))
+#define THBDB_BASIC_GET_KEYS_BY_POSITION_RESULT_CLASS(c) (G_TYPE_CHECK_CLASS_CAST ((c), THBDB__TYPE_BASIC_GET_KEYS_BY_POSITION_RESULT, thbdbBasicGetKeysByPositionResultClass))
+#define THBDB_IS_BASIC_GET_KEYS_BY_POSITION_RESULT(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), THBDB_TYPE_BASIC_GET_KEYS_BY_POSITION_RESULT))
+#define THBDB_IS_BASIC_GET_KEYS_BY_POSITION_RESULT_CLASS(c) (G_TYPE_CHECK_CLASS_TYPE ((c), THBDB_TYPE_BASIC_GET_KEYS_BY_POSITION_RESULT))
+#define THBDB_BASIC_GET_KEYS_BY_POSITION_RESULT_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), THBDB_TYPE_BASIC_GET_KEYS_BY_POSITION_RESULT, thbdbBasicGetKeysByPositionResultClass))
+
 /* struct BasicPingArgs */
 struct _thbdbBasicPingArgs
 { 
