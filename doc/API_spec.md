@@ -10,29 +10,34 @@ Following: API specification.
 ### put( k:string, v:string )  
   Puts on the BDB that ThBDB contains.
   Associates the specified key(k:string) with the specified value(v:string) int the ThBDB.
-  
+
 ### putAsync( k:string, v:string )
   Puts on the BDB asynchronusly.
-  
+
 ### string get( k:string )
   Returns the value(v:string) with which the specified key(k:string) associates.
-  
+
 ### remove( k:string )
   Removes the specified key(k:string) and value(v:string) pair associated with it from the ThBDB.
-  
+
 ### Keys getKeys()
   Returns key list from the ThBDB.
   Key list contains all of keys in the ThBDB.
-  
+
 ### boolean exists( k:string )
   Returns true if the specified key(k:string) exsists in the TbBDB.
 
 ## OPERATION:
 
   initialize
-  
+
   open
-  
+
   close
-  
-  unlink
+
+### void ping()
+  To check this thbdb is alive.
+
+### i32 getStatus()
+  Returns the status of this thbdb.
+   
