@@ -59,6 +59,14 @@ class Iface(object):
     def getKeys(self):
         pass
 
+    def getKeysByPosition(self, position, size):
+        """
+        Parameters:
+         - position
+         - size
+        """
+        pass
+
     def ping(self):
         pass
 
@@ -70,6 +78,9 @@ class Iface(object):
         pass
 
     def getStatus(self):
+        pass
+
+    def compact(self):
         pass
 
 
@@ -255,6 +266,41 @@ class Client(Iface):
             raise result.exp
         raise TApplicationException(TApplicationException.MISSING_RESULT, "getKeys failed: unknown result")
 
+    def getKeysByPosition(self, position, size):
+        """
+        Parameters:
+         - position
+         - size
+        """
+        self.send_getKeysByPosition(position, size)
+        return self.recv_getKeysByPosition()
+
+    def send_getKeysByPosition(self, position, size):
+        self._oprot.writeMessageBegin('getKeysByPosition', TMessageType.CALL, self._seqid)
+        args = getKeysByPosition_args()
+        args.position = position
+        args.size = size
+        args.write(self._oprot)
+        self._oprot.writeMessageEnd()
+        self._oprot.trans.flush()
+
+    def recv_getKeysByPosition(self):
+        iprot = self._iprot
+        (fname, mtype, rseqid) = iprot.readMessageBegin()
+        if mtype == TMessageType.EXCEPTION:
+            x = TApplicationException()
+            x.read(iprot)
+            iprot.readMessageEnd()
+            raise x
+        result = getKeysByPosition_result()
+        result.read(iprot)
+        iprot.readMessageEnd()
+        if result.success is not None:
+            return result.success
+        if result.exp is not None:
+            raise result.exp
+        raise TApplicationException(TApplicationException.MISSING_RESULT, "getKeysByPosition failed: unknown result")
+
     def ping(self):
         self.send_ping()
         self.recv_ping()
@@ -336,6 +382,34 @@ class Client(Iface):
             return result.success
         raise TApplicationException(TApplicationException.MISSING_RESULT, "getStatus failed: unknown result")
 
+    def compact(self):
+        self.send_compact()
+        return self.recv_compact()
+
+    def send_compact(self):
+        self._oprot.writeMessageBegin('compact', TMessageType.CALL, self._seqid)
+        args = compact_args()
+        args.write(self._oprot)
+        self._oprot.writeMessageEnd()
+        self._oprot.trans.flush()
+
+    def recv_compact(self):
+        iprot = self._iprot
+        (fname, mtype, rseqid) = iprot.readMessageBegin()
+        if mtype == TMessageType.EXCEPTION:
+            x = TApplicationException()
+            x.read(iprot)
+            iprot.readMessageEnd()
+            raise x
+        result = compact_result()
+        result.read(iprot)
+        iprot.readMessageEnd()
+        if result.success is not None:
+            return result.success
+        if result.exp is not None:
+            raise result.exp
+        raise TApplicationException(TApplicationException.MISSING_RESULT, "compact failed: unknown result")
+
 
 class Processor(Iface, TProcessor):
     def __init__(self, handler):
@@ -347,9 +421,11 @@ class Processor(Iface, TProcessor):
         self._processMap["get"] = Processor.process_get
         self._processMap["remove"] = Processor.process_remove
         self._processMap["getKeys"] = Processor.process_getKeys
+        self._processMap["getKeysByPosition"] = Processor.process_getKeysByPosition
         self._processMap["ping"] = Processor.process_ping
         self._processMap["hello"] = Processor.process_hello
         self._processMap["getStatus"] = Processor.process_getStatus
+        self._processMap["compact"] = Processor.process_compact
 
     def process(self, iprot, oprot):
         (name, type, seqid) = iprot.readMessageBegin()
@@ -507,6 +583,32 @@ class Processor(Iface, TProcessor):
         oprot.writeMessageEnd()
         oprot.trans.flush()
 
+    def process_getKeysByPosition(self, seqid, iprot, oprot):
+        args = getKeysByPosition_args()
+        args.read(iprot)
+        iprot.readMessageEnd()
+        result = getKeysByPosition_result()
+        try:
+            result.success = self._handler.getKeysByPosition(args.position, args.size)
+            msg_type = TMessageType.REPLY
+        except TTransport.TTransportException:
+            raise
+        except InvalidOperation as exp:
+            msg_type = TMessageType.REPLY
+            result.exp = exp
+        except TApplicationException as ex:
+            logging.exception('TApplication exception in handler')
+            msg_type = TMessageType.EXCEPTION
+            result = ex
+        except Exception:
+            logging.exception('Unexpected exception in handler')
+            msg_type = TMessageType.EXCEPTION
+            result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+        oprot.writeMessageBegin("getKeysByPosition", msg_type, seqid)
+        result.write(oprot)
+        oprot.writeMessageEnd()
+        oprot.trans.flush()
+
     def process_ping(self, seqid, iprot, oprot):
         args = ping_args()
         args.read(iprot)
@@ -572,6 +674,32 @@ class Processor(Iface, TProcessor):
             msg_type = TMessageType.EXCEPTION
             result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
         oprot.writeMessageBegin("getStatus", msg_type, seqid)
+        result.write(oprot)
+        oprot.writeMessageEnd()
+        oprot.trans.flush()
+
+    def process_compact(self, seqid, iprot, oprot):
+        args = compact_args()
+        args.read(iprot)
+        iprot.readMessageEnd()
+        result = compact_result()
+        try:
+            result.success = self._handler.compact()
+            msg_type = TMessageType.REPLY
+        except TTransport.TTransportException:
+            raise
+        except InvalidOperation as exp:
+            msg_type = TMessageType.REPLY
+            result.exp = exp
+        except TApplicationException as ex:
+            logging.exception('TApplication exception in handler')
+            msg_type = TMessageType.EXCEPTION
+            result = ex
+        except Exception:
+            logging.exception('Unexpected exception in handler')
+            msg_type = TMessageType.EXCEPTION
+            result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+        oprot.writeMessageBegin("compact", msg_type, seqid)
         result.write(oprot)
         oprot.writeMessageEnd()
         oprot.trans.flush()
@@ -1295,6 +1423,153 @@ getKeys_result.thrift_spec = (
 )
 
 
+class getKeysByPosition_args(object):
+    """
+    Attributes:
+     - position
+     - size
+    """
+
+
+    def __init__(self, position=None, size=None,):
+        self.position = position
+        self.size = size
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.I32:
+                    self.position = iprot.readI32()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.I32:
+                    self.size = iprot.readI32()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            return
+        oprot.writeStructBegin('getKeysByPosition_args')
+        if self.position is not None:
+            oprot.writeFieldBegin('position', TType.I32, 1)
+            oprot.writeI32(self.position)
+            oprot.writeFieldEnd()
+        if self.size is not None:
+            oprot.writeFieldBegin('size', TType.I32, 2)
+            oprot.writeI32(self.size)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+all_structs.append(getKeysByPosition_args)
+getKeysByPosition_args.thrift_spec = (
+    None,  # 0
+    (1, TType.I32, 'position', None, None, ),  # 1
+    (2, TType.I32, 'size', None, None, ),  # 2
+)
+
+
+class getKeysByPosition_result(object):
+    """
+    Attributes:
+     - success
+     - exp
+    """
+
+
+    def __init__(self, success=None, exp=None,):
+        self.success = success
+        self.exp = exp
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 0:
+                if ftype == TType.STRUCT:
+                    self.success = Keys()
+                    self.success.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 1:
+                if ftype == TType.STRUCT:
+                    self.exp = InvalidOperation()
+                    self.exp.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            return
+        oprot.writeStructBegin('getKeysByPosition_result')
+        if self.success is not None:
+            oprot.writeFieldBegin('success', TType.STRUCT, 0)
+            self.success.write(oprot)
+            oprot.writeFieldEnd()
+        if self.exp is not None:
+            oprot.writeFieldBegin('exp', TType.STRUCT, 1)
+            self.exp.write(oprot)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+all_structs.append(getKeysByPosition_result)
+getKeysByPosition_result.thrift_spec = (
+    (0, TType.STRUCT, 'success', [Keys, None], None, ),  # 0
+    (1, TType.STRUCT, 'exp', [InvalidOperation, None], None, ),  # 1
+)
+
+
 class ping_args(object):
 
 
@@ -1602,6 +1877,122 @@ class getStatus_result(object):
 all_structs.append(getStatus_result)
 getStatus_result.thrift_spec = (
     (0, TType.I32, 'success', None, None, ),  # 0
+)
+
+
+class compact_args(object):
+
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            return
+        oprot.writeStructBegin('compact_args')
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+all_structs.append(compact_args)
+compact_args.thrift_spec = (
+)
+
+
+class compact_result(object):
+    """
+    Attributes:
+     - success
+     - exp
+    """
+
+
+    def __init__(self, success=None, exp=None,):
+        self.success = success
+        self.exp = exp
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 0:
+                if ftype == TType.I32:
+                    self.success = iprot.readI32()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 1:
+                if ftype == TType.STRUCT:
+                    self.exp = InvalidOperation()
+                    self.exp.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            return
+        oprot.writeStructBegin('compact_result')
+        if self.success is not None:
+            oprot.writeFieldBegin('success', TType.I32, 0)
+            oprot.writeI32(self.success)
+            oprot.writeFieldEnd()
+        if self.exp is not None:
+            oprot.writeFieldBegin('exp', TType.STRUCT, 1)
+            self.exp.write(oprot)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+all_structs.append(compact_result)
+compact_result.thrift_spec = (
+    (0, TType.I32, 'success', None, None, ),  # 0
+    (1, TType.STRUCT, 'exp', [InvalidOperation, None], None, ),  # 1
 )
 fix_spec(all_structs)
 del all_structs

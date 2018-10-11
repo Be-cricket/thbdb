@@ -30,9 +30,11 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
     print('  string get(string key)')
     print('  void remove(string key)')
     print('  Keys getKeys()')
+    print('  Keys getKeysByPosition(i32 position, i32 size)')
     print('  void ping()')
     print('  string hello(string arg)')
     print('  i32 getStatus()')
+    print('  i32 compact()')
     print('')
     sys.exit(0)
 
@@ -148,6 +150,12 @@ elif cmd == 'getKeys':
         sys.exit(1)
     pp.pprint(client.getKeys())
 
+elif cmd == 'getKeysByPosition':
+    if len(args) != 2:
+        print('getKeysByPosition requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.getKeysByPosition(eval(args[0]), eval(args[1]),))
+
 elif cmd == 'ping':
     if len(args) != 0:
         print('ping requires 0 args')
@@ -165,6 +173,12 @@ elif cmd == 'getStatus':
         print('getStatus requires 0 args')
         sys.exit(1)
     pp.pprint(client.getStatus())
+
+elif cmd == 'compact':
+    if len(args) != 0:
+        print('compact requires 0 args')
+        sys.exit(1)
+    pp.pprint(client.compact())
 
 else:
     print('Unrecognized method %s' % cmd)
