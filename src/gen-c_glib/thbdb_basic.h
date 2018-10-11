@@ -24,6 +24,7 @@ struct _thbdbBasicIfInterface
   gboolean (*get) (thbdbBasicIf *iface, gchar ** _return, const gchar * key, thbdbInvalidOperation ** exp, GError **error);
   gboolean (*remove) (thbdbBasicIf *iface, const gchar * key, thbdbInvalidOperation ** exp, GError **error);
   gboolean (*get_keys) (thbdbBasicIf *iface, thbdbKeys ** _return, thbdbInvalidOperation ** exp, GError **error);
+  gboolean (*get_keys_by_position) (thbdbBasicIf *iface, thbdbKeys ** _return, const gint32 position, const gint32 size, thbdbInvalidOperation ** exp, GError **error);
   gboolean (*ping) (thbdbBasicIf *iface, GError **error);
   gboolean (*hello) (thbdbBasicIf *iface, gchar ** _return, const gchar * arg, GError **error);
   gboolean (*get_status) (thbdbBasicIf *iface, gint32* _return, GError **error);
@@ -42,6 +43,7 @@ gboolean thbdb_basic_if_exists (thbdbBasicIf *iface, gboolean* _return, const gc
 gboolean thbdb_basic_if_get (thbdbBasicIf *iface, gchar ** _return, const gchar * key, thbdbInvalidOperation ** exp, GError **error);
 gboolean thbdb_basic_if_remove (thbdbBasicIf *iface, const gchar * key, thbdbInvalidOperation ** exp, GError **error);
 gboolean thbdb_basic_if_get_keys (thbdbBasicIf *iface, thbdbKeys ** _return, thbdbInvalidOperation ** exp, GError **error);
+gboolean thbdb_basic_if_get_keys_by_position (thbdbBasicIf *iface, thbdbKeys ** _return, const gint32 position, const gint32 size, thbdbInvalidOperation ** exp, GError **error);
 gboolean thbdb_basic_if_ping (thbdbBasicIf *iface, GError **error);
 gboolean thbdb_basic_if_hello (thbdbBasicIf *iface, gchar ** _return, const gchar * arg, GError **error);
 gboolean thbdb_basic_if_get_status (thbdbBasicIf *iface, gint32* _return, GError **error);
@@ -87,6 +89,9 @@ gboolean thbdb_basic_client_recv_remove (thbdbBasicIf * iface, thbdbInvalidOpera
 gboolean thbdb_basic_client_get_keys (thbdbBasicIf * iface, thbdbKeys ** _return, thbdbInvalidOperation ** exp, GError ** error);
 gboolean thbdb_basic_client_send_get_keys (thbdbBasicIf * iface, GError ** error);
 gboolean thbdb_basic_client_recv_get_keys (thbdbBasicIf * iface, thbdbKeys ** _return, thbdbInvalidOperation ** exp, GError ** error);
+gboolean thbdb_basic_client_get_keys_by_position (thbdbBasicIf * iface, thbdbKeys ** _return, const gint32 position, const gint32 size, thbdbInvalidOperation ** exp, GError ** error);
+gboolean thbdb_basic_client_send_get_keys_by_position (thbdbBasicIf * iface, const gint32 position, const gint32 size, GError ** error);
+gboolean thbdb_basic_client_recv_get_keys_by_position (thbdbBasicIf * iface, thbdbKeys ** _return, thbdbInvalidOperation ** exp, GError ** error);
 gboolean thbdb_basic_client_ping (thbdbBasicIf * iface, GError ** error);
 gboolean thbdb_basic_client_send_ping (thbdbBasicIf * iface, GError ** error);
 gboolean thbdb_basic_client_recv_ping (thbdbBasicIf * iface, GError ** error);
@@ -116,6 +121,7 @@ struct _thbdbBasicHandlerClass
   gboolean (*get) (thbdbBasicIf *iface, gchar ** _return, const gchar * key, thbdbInvalidOperation ** exp, GError **error);
   gboolean (*remove) (thbdbBasicIf *iface, const gchar * key, thbdbInvalidOperation ** exp, GError **error);
   gboolean (*get_keys) (thbdbBasicIf *iface, thbdbKeys ** _return, thbdbInvalidOperation ** exp, GError **error);
+  gboolean (*get_keys_by_position) (thbdbBasicIf *iface, thbdbKeys ** _return, const gint32 position, const gint32 size, thbdbInvalidOperation ** exp, GError **error);
   gboolean (*ping) (thbdbBasicIf *iface, GError **error);
   gboolean (*hello) (thbdbBasicIf *iface, gchar ** _return, const gchar * arg, GError **error);
   gboolean (*get_status) (thbdbBasicIf *iface, gint32* _return, GError **error);
@@ -136,6 +142,7 @@ gboolean thbdb_basic_handler_exists (thbdbBasicIf *iface, gboolean* _return, con
 gboolean thbdb_basic_handler_get (thbdbBasicIf *iface, gchar ** _return, const gchar * key, thbdbInvalidOperation ** exp, GError **error);
 gboolean thbdb_basic_handler_remove (thbdbBasicIf *iface, const gchar * key, thbdbInvalidOperation ** exp, GError **error);
 gboolean thbdb_basic_handler_get_keys (thbdbBasicIf *iface, thbdbKeys ** _return, thbdbInvalidOperation ** exp, GError **error);
+gboolean thbdb_basic_handler_get_keys_by_position (thbdbBasicIf *iface, thbdbKeys ** _return, const gint32 position, const gint32 size, thbdbInvalidOperation ** exp, GError **error);
 gboolean thbdb_basic_handler_ping (thbdbBasicIf *iface, GError **error);
 gboolean thbdb_basic_handler_hello (thbdbBasicIf *iface, gchar ** _return, const gchar * arg, GError **error);
 gboolean thbdb_basic_handler_get_status (thbdbBasicIf *iface, gint32* _return, GError **error);

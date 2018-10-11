@@ -46,6 +46,12 @@ thbdb_basic_if_get_keys (thbdbBasicIf *iface, thbdbKeys ** _return, thbdbInvalid
 }
 
 gboolean
+thbdb_basic_if_get_keys_by_position (thbdbBasicIf *iface, thbdbKeys ** _return, const gint32 position, const gint32 size, thbdbInvalidOperation ** exp, GError **error)
+{
+  return THBDB_BASIC_IF_GET_INTERFACE (iface)->get_keys_by_position (iface, _return, position, size, exp, error);
+}
+
+gboolean
 thbdb_basic_if_ping (thbdbBasicIf *iface, GError **error)
 {
   return THBDB_BASIC_IF_GET_INTERFACE (iface)->ping (iface, error);
@@ -1201,6 +1207,221 @@ gboolean thbdb_basic_client_get_keys (thbdbBasicIf * iface, thbdbKeys ** _return
   return TRUE;
 }
 
+gboolean thbdb_basic_client_send_get_keys_by_position (thbdbBasicIf * iface, const gint32 position, const gint32 size, GError ** error)
+{
+  gint32 cseqid = 0;
+  ThriftProtocol * protocol = THBDB_BASIC_CLIENT (iface)->output_protocol;
+
+  if (thrift_protocol_write_message_begin (protocol, "getKeysByPosition", T_CALL, cseqid, error) < 0)
+    return FALSE;
+
+  {
+    gint32 ret;
+    gint32 xfer = 0;
+
+    
+    if ((ret = thrift_protocol_write_struct_begin (protocol, "getKeysByPosition_args", error)) < 0)
+      return 0;
+    xfer += ret;
+    if ((ret = thrift_protocol_write_field_begin (protocol, "position", T_I32, 1, error)) < 0)
+      return 0;
+    xfer += ret;
+    if ((ret = thrift_protocol_write_i32 (protocol, position, error)) < 0)
+      return 0;
+    xfer += ret;
+
+    if ((ret = thrift_protocol_write_field_end (protocol, error)) < 0)
+      return 0;
+    xfer += ret;
+    if ((ret = thrift_protocol_write_field_begin (protocol, "size", T_I32, 2, error)) < 0)
+      return 0;
+    xfer += ret;
+    if ((ret = thrift_protocol_write_i32 (protocol, size, error)) < 0)
+      return 0;
+    xfer += ret;
+
+    if ((ret = thrift_protocol_write_field_end (protocol, error)) < 0)
+      return 0;
+    xfer += ret;
+    if ((ret = thrift_protocol_write_field_stop (protocol, error)) < 0)
+      return 0;
+    xfer += ret;
+    if ((ret = thrift_protocol_write_struct_end (protocol, error)) < 0)
+      return 0;
+    xfer += ret;
+
+  }
+
+  if (thrift_protocol_write_message_end (protocol, error) < 0)
+    return FALSE;
+  if (!thrift_transport_flush (protocol->transport, error))
+    return FALSE;
+  if (!thrift_transport_write_end (protocol->transport, error))
+    return FALSE;
+
+  return TRUE;
+}
+
+gboolean thbdb_basic_client_recv_get_keys_by_position (thbdbBasicIf * iface, thbdbKeys ** _return, thbdbInvalidOperation ** exp, GError ** error)
+{
+  gint32 rseqid;
+  gchar * fname = NULL;
+  ThriftMessageType mtype;
+  ThriftProtocol * protocol = THBDB_BASIC_CLIENT (iface)->input_protocol;
+  ThriftApplicationException *xception;
+
+  if (thrift_protocol_read_message_begin (protocol, &fname, &mtype, &rseqid, error) < 0) {
+    if (fname) g_free (fname);
+    return FALSE;
+  }
+
+  if (mtype == T_EXCEPTION) {
+    if (fname) g_free (fname);
+    xception = g_object_new (THRIFT_TYPE_APPLICATION_EXCEPTION, NULL);
+    thrift_struct_read (THRIFT_STRUCT (xception), protocol, NULL);
+    thrift_protocol_read_message_end (protocol, NULL);
+    thrift_transport_read_end (protocol->transport, NULL);
+    g_set_error (error, THRIFT_APPLICATION_EXCEPTION_ERROR,xception->type, "application error: %s", xception->message);
+    g_object_unref (xception);
+    return FALSE;
+  } else if (mtype != T_REPLY) {
+    if (fname) g_free (fname);
+    thrift_protocol_skip (protocol, T_STRUCT, NULL);
+    thrift_protocol_read_message_end (protocol, NULL);
+    thrift_transport_read_end (protocol->transport, NULL);
+    g_set_error (error, THRIFT_APPLICATION_EXCEPTION_ERROR, THRIFT_APPLICATION_EXCEPTION_ERROR_INVALID_MESSAGE_TYPE, "invalid message type %d, expected T_REPLY", mtype);
+    return FALSE;
+  } else if (strncmp (fname, "getKeysByPosition", 17) != 0) {
+    thrift_protocol_skip (protocol, T_STRUCT, NULL);
+    thrift_protocol_read_message_end (protocol,error);
+    thrift_transport_read_end (protocol->transport, error);
+    g_set_error (error, THRIFT_APPLICATION_EXCEPTION_ERROR, THRIFT_APPLICATION_EXCEPTION_ERROR_WRONG_METHOD_NAME, "wrong method name %s, expected getKeysByPosition", fname);
+    if (fname) g_free (fname);
+    return FALSE;
+  }
+  if (fname) g_free (fname);
+
+  {
+    gint32 ret;
+    gint32 xfer = 0;
+    gchar *name = NULL;
+    ThriftType ftype;
+    gint16 fid;
+    guint32 len = 0;
+    gpointer data = NULL;
+    
+
+    /* satisfy -Wall in case these aren't used */
+    THRIFT_UNUSED_VAR (len);
+    THRIFT_UNUSED_VAR (data);
+
+    /* read the struct begin marker */
+    if ((ret = thrift_protocol_read_struct_begin (protocol, &name, error)) < 0)
+    {
+      if (name) g_free (name);
+      return 0;
+    }
+    xfer += ret;
+    if (name) g_free (name);
+    name = NULL;
+
+    /* read the struct fields */
+    while (1)
+    {
+      /* read the beginning of a field */
+      if ((ret = thrift_protocol_read_field_begin (protocol, &name, &ftype, &fid, error)) < 0)
+      {
+        if (name) g_free (name);
+        return 0;
+      }
+      xfer += ret;
+      if (name) g_free (name);
+      name = NULL;
+
+      /* break if we get a STOP field */
+      if (ftype == T_STOP)
+      {
+        break;
+      }
+
+      switch (fid)
+      {
+        case 0:
+          if (ftype == T_STRUCT)
+          {
+            if ((ret = thrift_struct_read (THRIFT_STRUCT (*_return), protocol, error)) < 0)
+            {
+              return 0;
+            }
+            xfer += ret;
+          } else {
+            if ((ret = thrift_protocol_skip (protocol, ftype, error)) < 0)
+              return 0;
+            xfer += ret;
+          }
+          break;
+        case 1:
+          if (ftype == T_STRUCT)
+          {
+            /* This struct is an exception */
+            if ( *exp != NULL)
+            {
+              g_object_unref (*exp);
+            }
+            *exp = g_object_new (THBDB_TYPE_INVALID_OPERATION, NULL);
+            if ((ret = thrift_struct_read (THRIFT_STRUCT (*exp), protocol, error)) < 0)
+            {
+              g_object_unref (*exp);
+              *exp = NULL;
+              return 0;
+            }
+            xfer += ret;
+          } else {
+            if ((ret = thrift_protocol_skip (protocol, ftype, error)) < 0)
+              return 0;
+            xfer += ret;
+          }
+          break;
+        default:
+          if ((ret = thrift_protocol_skip (protocol, ftype, error)) < 0)
+            return 0;
+          xfer += ret;
+          break;
+      }
+      if ((ret = thrift_protocol_read_field_end (protocol, error)) < 0)
+        return 0;
+      xfer += ret;
+    }
+
+    if ((ret = thrift_protocol_read_struct_end (protocol, error)) < 0)
+      return 0;
+    xfer += ret;
+
+  }
+
+  if (thrift_protocol_read_message_end (protocol, error) < 0)
+    return FALSE;
+
+  if (!thrift_transport_read_end (protocol->transport, error))
+    return FALSE;
+
+  if (*exp != NULL)
+  {
+      g_set_error (error, THBDB_INVALID_OPERATION_ERROR, THBDB_INVALID_OPERATION_ERROR_CODE, "InvalidOperation");
+      return FALSE;
+  }
+  return TRUE;
+}
+
+gboolean thbdb_basic_client_get_keys_by_position (thbdbBasicIf * iface, thbdbKeys ** _return, const gint32 position, const gint32 size, thbdbInvalidOperation ** exp, GError ** error)
+{
+  if (!thbdb_basic_client_send_get_keys_by_position (iface, position, size, error))
+    return FALSE;
+  if (!thbdb_basic_client_recv_get_keys_by_position (iface, _return, exp, error))
+    return FALSE;
+  return TRUE;
+}
+
 gboolean thbdb_basic_client_send_ping (thbdbBasicIf * iface, GError ** error)
 {
   gint32 cseqid = 0;
@@ -1712,6 +1933,7 @@ thbdb_basic_if_interface_init (thbdbBasicIfInterface *iface)
   iface->get = thbdb_basic_client_get;
   iface->remove = thbdb_basic_client_remove;
   iface->get_keys = thbdb_basic_client_get_keys;
+  iface->get_keys_by_position = thbdb_basic_client_get_keys_by_position;
   iface->ping = thbdb_basic_client_ping;
   iface->hello = thbdb_basic_client_hello;
   iface->get_status = thbdb_basic_client_get_status;
@@ -1801,6 +2023,13 @@ gboolean thbdb_basic_handler_get_keys (thbdbBasicIf * iface, thbdbKeys ** _retur
   return THBDB_BASIC_HANDLER_GET_CLASS (iface)->get_keys (iface, _return, exp, error);
 }
 
+gboolean thbdb_basic_handler_get_keys_by_position (thbdbBasicIf * iface, thbdbKeys ** _return, const gint32 position, const gint32 size, thbdbInvalidOperation ** exp, GError ** error)
+{
+  g_return_val_if_fail (THBDB_IS_BASIC_HANDLER (iface), FALSE);
+
+  return THBDB_BASIC_HANDLER_GET_CLASS (iface)->get_keys_by_position (iface, _return, position, size, exp, error);
+}
+
 gboolean thbdb_basic_handler_ping (thbdbBasicIf * iface, GError ** error)
 {
   g_return_val_if_fail (THBDB_IS_BASIC_HANDLER (iface), FALSE);
@@ -1831,6 +2060,7 @@ thbdb_basic_handler_basic_if_interface_init (thbdbBasicIfInterface *iface)
   iface->get = thbdb_basic_handler_get;
   iface->remove = thbdb_basic_handler_remove;
   iface->get_keys = thbdb_basic_handler_get_keys;
+  iface->get_keys_by_position = thbdb_basic_handler_get_keys_by_position;
   iface->ping = thbdb_basic_handler_ping;
   iface->hello = thbdb_basic_handler_hello;
   iface->get_status = thbdb_basic_handler_get_status;
@@ -1851,6 +2081,7 @@ thbdb_basic_handler_class_init (thbdbBasicHandlerClass *cls)
   cls->get = NULL;
   cls->remove = NULL;
   cls->get_keys = NULL;
+  cls->get_keys_by_position = NULL;
   cls->ping = NULL;
   cls->hello = NULL;
   cls->get_status = NULL;
@@ -1915,6 +2146,12 @@ thbdb_basic_processor_process_get_keys (thbdbBasicProcessor *,
                                         ThriftProtocol *,
                                         GError **);
 static gboolean
+thbdb_basic_processor_process_get_keys_by_position (thbdbBasicProcessor *,
+                                                    gint32,
+                                                    ThriftProtocol *,
+                                                    ThriftProtocol *,
+                                                    GError **);
+static gboolean
 thbdb_basic_processor_process_ping (thbdbBasicProcessor *,
                                     gint32,
                                     ThriftProtocol *,
@@ -1934,7 +2171,7 @@ thbdb_basic_processor_process_get_status (thbdbBasicProcessor *,
                                           GError **);
 
 static thbdb_basic_processor_process_function_def
-thbdb_basic_processor_process_function_defs[9] = {
+thbdb_basic_processor_process_function_defs[10] = {
   {
     "put",
     thbdb_basic_processor_process_put
@@ -1958,6 +2195,10 @@ thbdb_basic_processor_process_function_defs[9] = {
   {
     "getKeys",
     thbdb_basic_processor_process_get_keys
+  },
+  {
+    "getKeysByPosition",
+    thbdb_basic_processor_process_get_keys_by_position
   },
   {
     "ping",
@@ -2627,6 +2868,126 @@ thbdb_basic_processor_process_get_keys (thbdbBasicProcessor *self,
 }
 
 static gboolean
+thbdb_basic_processor_process_get_keys_by_position (thbdbBasicProcessor *self,
+                                                    gint32 sequence_id,
+                                                    ThriftProtocol *input_protocol,
+                                                    ThriftProtocol *output_protocol,
+                                                    GError **error)
+{
+  gboolean result = TRUE;
+  ThriftTransport * transport;
+  ThriftApplicationException *xception;
+  thbdbBasicGetKeysByPositionArgs * args =
+    g_object_new (THBDB_TYPE_BASIC_GET_KEYS_BY_POSITION_ARGS, NULL);
+
+  g_object_get (input_protocol, "transport", &transport, NULL);
+
+  if ((thrift_struct_read (THRIFT_STRUCT (args), input_protocol, error) != -1) &&
+      (thrift_protocol_read_message_end (input_protocol, error) != -1) &&
+      (thrift_transport_read_end (transport, error) != FALSE))
+  {
+    gint position;
+    gint size;
+    thbdbInvalidOperation * exp = NULL;
+    thbdbKeys * return_value;
+    thbdbBasicGetKeysByPositionResult * result_struct;
+
+    g_object_get (args,
+                  "position", &position,
+                  "size", &size,
+                  NULL);
+
+    g_object_unref (transport);
+    g_object_get (output_protocol, "transport", &transport, NULL);
+
+    result_struct = g_object_new (THBDB_TYPE_BASIC_GET_KEYS_BY_POSITION_RESULT, NULL);
+    g_object_get (result_struct, "success", &return_value, NULL);
+
+    if (thbdb_basic_handler_get_keys_by_position (THBDB_BASIC_IF (self->handler),
+                                                  &return_value,
+                                                  position,
+                                                  size,
+                                                  &exp,
+                                                  error) == TRUE)
+    {
+      g_object_set (result_struct, "success", return_value, NULL);
+      if (return_value != NULL)
+        g_object_unref (return_value);
+
+      result =
+        ((thrift_protocol_write_message_begin (output_protocol,
+                                               "getKeysByPosition",
+                                               T_REPLY,
+                                               sequence_id,
+                                               error) != -1) &&
+         (thrift_struct_write (THRIFT_STRUCT (result_struct),
+                               output_protocol,
+                               error) != -1));
+    }
+    else
+    {
+      if (exp != NULL)
+      {
+        g_object_set (result_struct,
+                      "exp", exp,
+                      NULL);
+
+        result =
+          ((thrift_protocol_write_message_begin (output_protocol,
+                                                 "getKeysByPosition",
+                                                 T_REPLY,
+                                                 sequence_id,
+                                                 error) != -1) &&
+           (thrift_struct_write (THRIFT_STRUCT (result_struct),
+                                 output_protocol,
+                                 error) != -1));
+      }
+      else
+      {
+        if (*error == NULL)
+          g_warning ("Basic.getKeysByPosition implementation returned FALSE "
+                     "but did not set an error");
+
+        xception =
+          g_object_new (THRIFT_TYPE_APPLICATION_EXCEPTION,
+                        "type",    *error != NULL ? (*error)->code :
+                                   THRIFT_APPLICATION_EXCEPTION_ERROR_UNKNOWN,
+                        "message", *error != NULL ? (*error)->message : NULL,
+                        NULL);
+        g_clear_error (error);
+
+        result =
+          ((thrift_protocol_write_message_begin (output_protocol,
+                                                 "getKeysByPosition",
+                                                 T_EXCEPTION,
+                                                 sequence_id,
+                                                 error) != -1) &&
+           (thrift_struct_write (THRIFT_STRUCT (xception),
+                                 output_protocol,
+                                 error) != -1));
+
+        g_object_unref (xception);
+      }
+    }
+
+    g_object_unref (result_struct);
+
+    if (result == TRUE)
+      result =
+        ((thrift_protocol_write_message_end (output_protocol, error) != -1) &&
+         (thrift_transport_write_end (transport, error) != FALSE) &&
+         (thrift_transport_flush (transport, error) != FALSE));
+  }
+  else
+    result = FALSE;
+
+  g_object_unref (transport);
+  g_object_unref (args);
+
+  return result;
+}
+
+static gboolean
 thbdb_basic_processor_process_ping (thbdbBasicProcessor *self,
                                     gint32 sequence_id,
                                     ThriftProtocol *input_protocol,
@@ -3006,7 +3367,7 @@ thbdb_basic_processor_init (thbdbBasicProcessor *self)
   self->handler = NULL;
   self->process_map = g_hash_table_new (g_str_hash, g_str_equal);
 
-  for (index = 0; index < 9; index += 1)
+  for (index = 0; index < 10; index += 1)
     g_hash_table_insert (self->process_map,
                          thbdb_basic_processor_process_function_defs[index].name,
                          &thbdb_basic_processor_process_function_defs[index]);

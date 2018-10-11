@@ -4115,6 +4115,584 @@ thbdb_basic_get_keys_result_get_type (void)
   return type;
 }
 
+enum _thbdbBasicGetKeysByPositionArgsProperties
+{
+  PROP_THBDB_BASIC_GET_KEYS_BY_POSITION_ARGS_0,
+  PROP_THBDB_BASIC_GET_KEYS_BY_POSITION_ARGS_POSITION,
+  PROP_THBDB_BASIC_GET_KEYS_BY_POSITION_ARGS_SIZE
+};
+
+/* reads a basic_get_keys_by_position_args object */
+static gint32
+thbdb_basic_get_keys_by_position_args_read (ThriftStruct *object, ThriftProtocol *protocol, GError **error)
+{
+  gint32 ret;
+  gint32 xfer = 0;
+  gchar *name = NULL;
+  ThriftType ftype;
+  gint16 fid;
+  guint32 len = 0;
+  gpointer data = NULL;
+  thbdbBasicGetKeysByPositionArgs * this_object = THBDB_BASIC_GET_KEYS_BY_POSITION_ARGS(object);
+
+  /* satisfy -Wall in case these aren't used */
+  THRIFT_UNUSED_VAR (len);
+  THRIFT_UNUSED_VAR (data);
+  THRIFT_UNUSED_VAR (this_object);
+
+  /* read the struct begin marker */
+  if ((ret = thrift_protocol_read_struct_begin (protocol, &name, error)) < 0)
+  {
+    if (name) g_free (name);
+    return -1;
+  }
+  xfer += ret;
+  if (name) g_free (name);
+  name = NULL;
+
+  /* read the struct fields */
+  while (1)
+  {
+    /* read the beginning of a field */
+    if ((ret = thrift_protocol_read_field_begin (protocol, &name, &ftype, &fid, error)) < 0)
+    {
+      if (name) g_free (name);
+      return -1;
+    }
+    xfer += ret;
+    if (name) g_free (name);
+    name = NULL;
+
+    /* break if we get a STOP field */
+    if (ftype == T_STOP)
+    {
+      break;
+    }
+
+    switch (fid)
+    {
+      case 1:
+        if (ftype == T_I32)
+        {
+          if ((ret = thrift_protocol_read_i32 (protocol, &this_object->position, error)) < 0)
+            return -1;
+          xfer += ret;
+          this_object->__isset_position = TRUE;
+        } else {
+          if ((ret = thrift_protocol_skip (protocol, ftype, error)) < 0)
+            return -1;
+          xfer += ret;
+        }
+        break;
+      case 2:
+        if (ftype == T_I32)
+        {
+          if ((ret = thrift_protocol_read_i32 (protocol, &this_object->size, error)) < 0)
+            return -1;
+          xfer += ret;
+          this_object->__isset_size = TRUE;
+        } else {
+          if ((ret = thrift_protocol_skip (protocol, ftype, error)) < 0)
+            return -1;
+          xfer += ret;
+        }
+        break;
+      default:
+        if ((ret = thrift_protocol_skip (protocol, ftype, error)) < 0)
+          return -1;
+        xfer += ret;
+        break;
+    }
+    if ((ret = thrift_protocol_read_field_end (protocol, error)) < 0)
+      return -1;
+    xfer += ret;
+  }
+
+  if ((ret = thrift_protocol_read_struct_end (protocol, error)) < 0)
+    return -1;
+  xfer += ret;
+
+  return xfer;
+}
+
+static gint32
+thbdb_basic_get_keys_by_position_args_write (ThriftStruct *object, ThriftProtocol *protocol, GError **error)
+{
+  gint32 ret;
+  gint32 xfer = 0;
+
+  thbdbBasicGetKeysByPositionArgs * this_object = THBDB_BASIC_GET_KEYS_BY_POSITION_ARGS(object);
+  THRIFT_UNUSED_VAR (this_object);
+  if ((ret = thrift_protocol_write_struct_begin (protocol, "BasicGetKeysByPositionArgs", error)) < 0)
+    return -1;
+  xfer += ret;
+  if ((ret = thrift_protocol_write_field_begin (protocol, "position", T_I32, 1, error)) < 0)
+    return -1;
+  xfer += ret;
+  if ((ret = thrift_protocol_write_i32 (protocol, this_object->position, error)) < 0)
+    return -1;
+  xfer += ret;
+
+  if ((ret = thrift_protocol_write_field_end (protocol, error)) < 0)
+    return -1;
+  xfer += ret;
+  if ((ret = thrift_protocol_write_field_begin (protocol, "size", T_I32, 2, error)) < 0)
+    return -1;
+  xfer += ret;
+  if ((ret = thrift_protocol_write_i32 (protocol, this_object->size, error)) < 0)
+    return -1;
+  xfer += ret;
+
+  if ((ret = thrift_protocol_write_field_end (protocol, error)) < 0)
+    return -1;
+  xfer += ret;
+  if ((ret = thrift_protocol_write_field_stop (protocol, error)) < 0)
+    return -1;
+  xfer += ret;
+  if ((ret = thrift_protocol_write_struct_end (protocol, error)) < 0)
+    return -1;
+  xfer += ret;
+
+  return xfer;
+}
+
+static void
+thbdb_basic_get_keys_by_position_args_set_property (GObject *object,
+                                                    guint property_id,
+                                                    const GValue *value,
+                                                    GParamSpec *pspec)
+{
+  thbdbBasicGetKeysByPositionArgs *self = THBDB_BASIC_GET_KEYS_BY_POSITION_ARGS (object);
+
+  switch (property_id)
+  {
+    case PROP_THBDB_BASIC_GET_KEYS_BY_POSITION_ARGS_POSITION:
+      self->position = g_value_get_int (value);
+      self->__isset_position = TRUE;
+      break;
+
+    case PROP_THBDB_BASIC_GET_KEYS_BY_POSITION_ARGS_SIZE:
+      self->size = g_value_get_int (value);
+      self->__isset_size = TRUE;
+      break;
+
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+      break;
+  }
+}
+
+static void
+thbdb_basic_get_keys_by_position_args_get_property (GObject *object,
+                                                    guint property_id,
+                                                    GValue *value,
+                                                    GParamSpec *pspec)
+{
+  thbdbBasicGetKeysByPositionArgs *self = THBDB_BASIC_GET_KEYS_BY_POSITION_ARGS (object);
+
+  switch (property_id)
+  {
+    case PROP_THBDB_BASIC_GET_KEYS_BY_POSITION_ARGS_POSITION:
+      g_value_set_int (value, self->position);
+      break;
+
+    case PROP_THBDB_BASIC_GET_KEYS_BY_POSITION_ARGS_SIZE:
+      g_value_set_int (value, self->size);
+      break;
+
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+      break;
+  }
+}
+
+static void 
+thbdb_basic_get_keys_by_position_args_instance_init (thbdbBasicGetKeysByPositionArgs * object)
+{
+  /* satisfy -Wall */
+  THRIFT_UNUSED_VAR (object);
+  object->position = 0;
+  object->__isset_position = FALSE;
+  object->size = 0;
+  object->__isset_size = FALSE;
+}
+
+static void 
+thbdb_basic_get_keys_by_position_args_finalize (GObject *object)
+{
+  thbdbBasicGetKeysByPositionArgs *tobject = THBDB_BASIC_GET_KEYS_BY_POSITION_ARGS (object);
+
+  /* satisfy -Wall in case we don't use tobject */
+  THRIFT_UNUSED_VAR (tobject);
+}
+
+static void
+thbdb_basic_get_keys_by_position_args_class_init (thbdbBasicGetKeysByPositionArgsClass * cls)
+{
+  GObjectClass *gobject_class = G_OBJECT_CLASS (cls);
+  ThriftStructClass *struct_class = THRIFT_STRUCT_CLASS (cls);
+
+  struct_class->read = thbdb_basic_get_keys_by_position_args_read;
+  struct_class->write = thbdb_basic_get_keys_by_position_args_write;
+
+  gobject_class->finalize = thbdb_basic_get_keys_by_position_args_finalize;
+  gobject_class->get_property = thbdb_basic_get_keys_by_position_args_get_property;
+  gobject_class->set_property = thbdb_basic_get_keys_by_position_args_set_property;
+
+  g_object_class_install_property
+    (gobject_class,
+     PROP_THBDB_BASIC_GET_KEYS_BY_POSITION_ARGS_POSITION,
+     g_param_spec_int ("position",
+                       NULL,
+                       NULL,
+                       G_MININT32,
+                       G_MAXINT32,
+                       0,
+                       G_PARAM_READWRITE));
+
+  g_object_class_install_property
+    (gobject_class,
+     PROP_THBDB_BASIC_GET_KEYS_BY_POSITION_ARGS_SIZE,
+     g_param_spec_int ("size",
+                       NULL,
+                       NULL,
+                       G_MININT32,
+                       G_MAXINT32,
+                       0,
+                       G_PARAM_READWRITE));
+}
+
+GType
+thbdb_basic_get_keys_by_position_args_get_type (void)
+{
+  static GType type = 0;
+
+  if (type == 0) 
+  {
+    static const GTypeInfo type_info = 
+    {
+      sizeof (thbdbBasicGetKeysByPositionArgsClass),
+      NULL, /* base_init */
+      NULL, /* base_finalize */
+      (GClassInitFunc) thbdb_basic_get_keys_by_position_args_class_init,
+      NULL, /* class_finalize */
+      NULL, /* class_data */
+      sizeof (thbdbBasicGetKeysByPositionArgs),
+      0, /* n_preallocs */
+      (GInstanceInitFunc) thbdb_basic_get_keys_by_position_args_instance_init,
+      NULL, /* value_table */
+    };
+
+    type = g_type_register_static (THRIFT_TYPE_STRUCT, 
+                                   "thbdbBasicGetKeysByPositionArgsType",
+                                   &type_info, 0);
+  }
+
+  return type;
+}
+
+enum _thbdbBasicGetKeysByPositionResultProperties
+{
+  PROP_THBDB_BASIC_GET_KEYS_BY_POSITION_RESULT_0,
+  PROP_THBDB_BASIC_GET_KEYS_BY_POSITION_RESULT_SUCCESS,
+  PROP_THBDB_BASIC_GET_KEYS_BY_POSITION_RESULT_EXP
+};
+
+/* reads a basic_get_keys_by_position_result object */
+static gint32
+thbdb_basic_get_keys_by_position_result_read (ThriftStruct *object, ThriftProtocol *protocol, GError **error)
+{
+  gint32 ret;
+  gint32 xfer = 0;
+  gchar *name = NULL;
+  ThriftType ftype;
+  gint16 fid;
+  guint32 len = 0;
+  gpointer data = NULL;
+  thbdbBasicGetKeysByPositionResult * this_object = THBDB_BASIC_GET_KEYS_BY_POSITION_RESULT(object);
+
+  /* satisfy -Wall in case these aren't used */
+  THRIFT_UNUSED_VAR (len);
+  THRIFT_UNUSED_VAR (data);
+  THRIFT_UNUSED_VAR (this_object);
+
+  /* read the struct begin marker */
+  if ((ret = thrift_protocol_read_struct_begin (protocol, &name, error)) < 0)
+  {
+    if (name) g_free (name);
+    return -1;
+  }
+  xfer += ret;
+  if (name) g_free (name);
+  name = NULL;
+
+  /* read the struct fields */
+  while (1)
+  {
+    /* read the beginning of a field */
+    if ((ret = thrift_protocol_read_field_begin (protocol, &name, &ftype, &fid, error)) < 0)
+    {
+      if (name) g_free (name);
+      return -1;
+    }
+    xfer += ret;
+    if (name) g_free (name);
+    name = NULL;
+
+    /* break if we get a STOP field */
+    if (ftype == T_STOP)
+    {
+      break;
+    }
+
+    switch (fid)
+    {
+      case 0:
+        if (ftype == T_STRUCT)
+        {
+          if ((ret = thrift_struct_read (THRIFT_STRUCT (this_object->success), protocol, error)) < 0)
+          {
+            return -1;
+          }
+          xfer += ret;
+          this_object->__isset_success = TRUE;
+        } else {
+          if ((ret = thrift_protocol_skip (protocol, ftype, error)) < 0)
+            return -1;
+          xfer += ret;
+        }
+        break;
+      case 1:
+        if (ftype == T_STRUCT)
+        {
+          /* This struct is an exception */
+          if ( this_object->exp != NULL)
+          {
+            g_object_unref (this_object->exp);
+          }
+          this_object->exp = g_object_new (THBDB_TYPE_INVALID_OPERATION, NULL);
+          if ((ret = thrift_struct_read (THRIFT_STRUCT (this_object->exp), protocol, error)) < 0)
+          {
+            g_object_unref (this_object->exp);
+            this_object->exp = NULL;
+            return -1;
+          }
+          xfer += ret;
+          this_object->__isset_exp = TRUE;
+        } else {
+          if ((ret = thrift_protocol_skip (protocol, ftype, error)) < 0)
+            return -1;
+          xfer += ret;
+        }
+        break;
+      default:
+        if ((ret = thrift_protocol_skip (protocol, ftype, error)) < 0)
+          return -1;
+        xfer += ret;
+        break;
+    }
+    if ((ret = thrift_protocol_read_field_end (protocol, error)) < 0)
+      return -1;
+    xfer += ret;
+  }
+
+  if ((ret = thrift_protocol_read_struct_end (protocol, error)) < 0)
+    return -1;
+  xfer += ret;
+
+  return xfer;
+}
+
+static gint32
+thbdb_basic_get_keys_by_position_result_write (ThriftStruct *object, ThriftProtocol *protocol, GError **error)
+{
+  gint32 ret;
+  gint32 xfer = 0;
+
+  thbdbBasicGetKeysByPositionResult * this_object = THBDB_BASIC_GET_KEYS_BY_POSITION_RESULT(object);
+  THRIFT_UNUSED_VAR (this_object);
+  if ((ret = thrift_protocol_write_struct_begin (protocol, "BasicGetKeysByPositionResult", error)) < 0)
+    return -1;
+  xfer += ret;
+  if (this_object->__isset_success == TRUE) {
+    if ((ret = thrift_protocol_write_field_begin (protocol, "success", T_STRUCT, 0, error)) < 0)
+      return -1;
+    xfer += ret;
+    if ((ret = thrift_struct_write (THRIFT_STRUCT (this_object->success), protocol, error)) < 0)
+      return -1;
+    xfer += ret;
+
+    if ((ret = thrift_protocol_write_field_end (protocol, error)) < 0)
+      return -1;
+    xfer += ret;
+  }
+  if (this_object->__isset_exp == TRUE) {
+    if ((ret = thrift_protocol_write_field_begin (protocol, "exp", T_STRUCT, 1, error)) < 0)
+      return -1;
+    xfer += ret;
+    if ((ret = thrift_struct_write (THRIFT_STRUCT (this_object->exp), protocol, error)) < 0)
+      return -1;
+    xfer += ret;
+
+    if ((ret = thrift_protocol_write_field_end (protocol, error)) < 0)
+      return -1;
+    xfer += ret;
+  }
+  if ((ret = thrift_protocol_write_field_stop (protocol, error)) < 0)
+    return -1;
+  xfer += ret;
+  if ((ret = thrift_protocol_write_struct_end (protocol, error)) < 0)
+    return -1;
+  xfer += ret;
+
+  return xfer;
+}
+
+static void
+thbdb_basic_get_keys_by_position_result_set_property (GObject *object,
+                                                      guint property_id,
+                                                      const GValue *value,
+                                                      GParamSpec *pspec)
+{
+  thbdbBasicGetKeysByPositionResult *self = THBDB_BASIC_GET_KEYS_BY_POSITION_RESULT (object);
+
+  switch (property_id)
+  {
+    case PROP_THBDB_BASIC_GET_KEYS_BY_POSITION_RESULT_SUCCESS:
+      if (self->success != NULL)
+        g_object_unref (self->success);
+      self->success = g_value_dup_object (value);
+      self->__isset_success = TRUE;
+      break;
+
+    case PROP_THBDB_BASIC_GET_KEYS_BY_POSITION_RESULT_EXP:
+      if (self->exp != NULL)
+        g_object_unref (self->exp);
+      self->exp = g_value_dup_object (value);
+      self->__isset_exp = TRUE;
+      break;
+
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+      break;
+  }
+}
+
+static void
+thbdb_basic_get_keys_by_position_result_get_property (GObject *object,
+                                                      guint property_id,
+                                                      GValue *value,
+                                                      GParamSpec *pspec)
+{
+  thbdbBasicGetKeysByPositionResult *self = THBDB_BASIC_GET_KEYS_BY_POSITION_RESULT (object);
+
+  switch (property_id)
+  {
+    case PROP_THBDB_BASIC_GET_KEYS_BY_POSITION_RESULT_SUCCESS:
+      g_value_set_object (value, self->success);
+      break;
+
+    case PROP_THBDB_BASIC_GET_KEYS_BY_POSITION_RESULT_EXP:
+      g_value_set_object (value, self->exp);
+      break;
+
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+      break;
+  }
+}
+
+static void 
+thbdb_basic_get_keys_by_position_result_instance_init (thbdbBasicGetKeysByPositionResult * object)
+{
+  /* satisfy -Wall */
+  THRIFT_UNUSED_VAR (object);
+  object->success = g_object_new (THBDB_TYPE_KEYS, NULL);
+  object->__isset_success = FALSE;
+  object->exp = NULL;
+  object->__isset_exp = FALSE;
+}
+
+static void 
+thbdb_basic_get_keys_by_position_result_finalize (GObject *object)
+{
+  thbdbBasicGetKeysByPositionResult *tobject = THBDB_BASIC_GET_KEYS_BY_POSITION_RESULT (object);
+
+  /* satisfy -Wall in case we don't use tobject */
+  THRIFT_UNUSED_VAR (tobject);
+  if (tobject->success != NULL)
+  {
+    g_object_unref(tobject->success);
+    tobject->success = NULL;
+  }
+  if (tobject->exp != NULL)
+  {
+    g_object_unref(tobject->exp);
+    tobject->exp = NULL;
+  }
+}
+
+static void
+thbdb_basic_get_keys_by_position_result_class_init (thbdbBasicGetKeysByPositionResultClass * cls)
+{
+  GObjectClass *gobject_class = G_OBJECT_CLASS (cls);
+  ThriftStructClass *struct_class = THRIFT_STRUCT_CLASS (cls);
+
+  struct_class->read = thbdb_basic_get_keys_by_position_result_read;
+  struct_class->write = thbdb_basic_get_keys_by_position_result_write;
+
+  gobject_class->finalize = thbdb_basic_get_keys_by_position_result_finalize;
+  gobject_class->get_property = thbdb_basic_get_keys_by_position_result_get_property;
+  gobject_class->set_property = thbdb_basic_get_keys_by_position_result_set_property;
+
+  g_object_class_install_property
+    (gobject_class,
+     PROP_THBDB_BASIC_GET_KEYS_BY_POSITION_RESULT_SUCCESS,
+     g_param_spec_object ("success",
+                         NULL,
+                         NULL,
+                         THBDB_TYPE_KEYS,
+                         G_PARAM_READWRITE));
+
+  g_object_class_install_property
+    (gobject_class,
+     PROP_THBDB_BASIC_GET_KEYS_BY_POSITION_RESULT_EXP,
+     g_param_spec_object ("exp",
+                         NULL,
+                         NULL,
+                         THBDB_TYPE_INVALID_OPERATION,
+                         G_PARAM_READWRITE));
+}
+
+GType
+thbdb_basic_get_keys_by_position_result_get_type (void)
+{
+  static GType type = 0;
+
+  if (type == 0) 
+  {
+    static const GTypeInfo type_info = 
+    {
+      sizeof (thbdbBasicGetKeysByPositionResultClass),
+      NULL, /* base_init */
+      NULL, /* base_finalize */
+      (GClassInitFunc) thbdb_basic_get_keys_by_position_result_class_init,
+      NULL, /* class_finalize */
+      NULL, /* class_data */
+      sizeof (thbdbBasicGetKeysByPositionResult),
+      0, /* n_preallocs */
+      (GInstanceInitFunc) thbdb_basic_get_keys_by_position_result_instance_init,
+      NULL, /* value_table */
+    };
+
+    type = g_type_register_static (THRIFT_TYPE_STRUCT, 
+                                   "thbdbBasicGetKeysByPositionResultType",
+                                   &type_info, 0);
+  }
+
+  return type;
+}
+
 /* reads a basic_ping_args object */
 static gint32
 thbdb_basic_ping_args_read (ThriftStruct *object, ThriftProtocol *protocol, GError **error)
