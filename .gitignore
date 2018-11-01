@@ -52,4 +52,6 @@ Mkfile.old
 dkms.conf
 
 */gen-c_glib/
+src/gen-c_glib/
 */gen-py/
+test/__pycache__/

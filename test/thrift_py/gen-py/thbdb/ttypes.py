@@ -186,7 +186,7 @@ class ItemList(object):
 class Keys(object):
     """
     Struct definition:
-    The return value of key() method.
+    The return value of getKeys() method.
 
     Attributes:
      - numOfKeys

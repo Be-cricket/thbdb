@@ -1,0 +1,40 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import glob
+import sys
+sys.path.append('gen-py')
+
+from thbdb import Basic
+from thbdb import ttypes
+
+from thrift import Thrift
+from thrift.transport import TSocket
+from thrift.transport import TTransport
+from thrift.protocol import TBinaryProtocol
+
+from locust import Locust, TaskSet, task
+
+class MyTaskSet(TaskSet):
+
+    def on_start(self):
+        #self.transport = TSocket.TSocket('localhost', 9090)
+        #self.transport = TTransport.TBufferedTransport(self.transport)
+        #self.protocol = TBinaryProtocol.TBinaryProtocol(self.transport)
+        #self.clienta = Basic.Client(self.protocol)
+        #self.transport.open()
+        print("start")
+        
+    @task
+    def hello(self):
+        print("hello")
+        #self.clienta.hello("Yeah!")
+        
+#    @task
+#    def get(self):
+#        self.clienta.get("a")
+
+class MyLocust(Locust):
+    task_set = MyTaskSet
+    min_wait = 5000
+    max_wait = 15000
