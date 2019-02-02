@@ -23,11 +23,19 @@ if __name__ == '__main__':
 
         transport.open()
 
-        client.put( "test",u"テストバリュー" )
+        #client.put( "test","テストバリュー" )
         
-        result = client.get(u"test")
-        print ("Call get(\"test\") =" , result.decode('utf-8') )
+        result = client.get(u'あ')
+        print( u'あ' )
+        print( u'\u3042\u3042' )
+        value = u'\u3042'
+        print( value )
+        print ( 'result: %s' % result)  
 
+        
+        #print ("Call get(\"あ\") =" , result.decode('string-escape') )
+        
+        
         
         transport.close()
 

@@ -309,7 +309,7 @@ u_int32_t get_from_bdb_unicode( char* key,int key_len , char** value, int *value
 
   if( value_buf.data != NULL ){
     *value = value_buf.data;
-    *value_len = (int) &(value_buf.size);
+    *value_len = (int) (value_buf.size);
   }
   
   return ret;

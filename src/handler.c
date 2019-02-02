@@ -196,13 +196,14 @@ gboolean thbdb_basicimpl_handler_get (thbdbBasicIf * iface, gchar ** _return, co
   GString* gkey;
   GString* gvalue;
 
-  char* value;
+  gchar* value;
   int value_len;
   int returnValue = TRUE;
 
   //gvalue = g_string_new( NULL );
   gvalue = NULL;
   gkey = g_string_new( key ); 
+
   /*
   ret = get_from_bdb( 
                       gkey->str,
@@ -214,7 +215,7 @@ gboolean thbdb_basicimpl_handler_get (thbdbBasicIf * iface, gchar ** _return, co
                       gkey->str,
                       gkey->len,
                       &value,
-		      &value_len
+                      &value_len
                        );
 
 
@@ -230,6 +231,9 @@ gboolean thbdb_basicimpl_handler_get (thbdbBasicIf * iface, gchar ** _return, co
     returnValue = FALSE;
   }else{
     gvalue = g_string_new_len( value, value_len );
+    if( value ){
+      free( value );
+    }
     *_return = gvalue->str;
   }
 

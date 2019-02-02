@@ -33,7 +33,7 @@ if __name__ == '__main__':
         print "Call exists(u\"テスト\") = %s " % (client.put(u"テスト", u"テストバリュー"),)
 
         result = client.get(u"テスト")
-        print "Call get(\"テスト\") = %s " % result.decode('utf-8')
+        print ( result )
 
         print "Call exists(\"a\") = %s " % (client.exists("a"),)
 
