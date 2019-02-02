@@ -35,8 +35,6 @@ if __name__ == '__main__':
         
         #print ("Call get(\"あ\") =" , result.decode('string-escape') )
         
-        
-        
         transport.close()
 
     except Thrift.TException as  tx:

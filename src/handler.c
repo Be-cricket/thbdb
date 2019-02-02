@@ -218,7 +218,6 @@ gboolean thbdb_basicimpl_handler_get (thbdbBasicIf * iface, gchar ** _return, co
                       &value_len
                        );
 
-
   if( ret != 0 ){
     g_set_error(
                 error,
@@ -231,6 +230,7 @@ gboolean thbdb_basicimpl_handler_get (thbdbBasicIf * iface, gchar ** _return, co
     returnValue = FALSE;
   }else{
     gvalue = g_string_new_len( value, value_len );
+
     if( value ){
       free( value );
     }

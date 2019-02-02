@@ -23,7 +23,6 @@ public class Client {
 	client.put( "a" , "a-value" );
     client.put( "test" , "testバリュー" );
    	client.put( "あ" , "あ" );
-
 	
 	result = client.get( "a" );
 	System.out.println(result);
@@ -36,8 +35,6 @@ public class Client {
 
 	result = client.get( "テスト" );
 	System.out.println(result);
-
-
 
     
 	transport.close();
