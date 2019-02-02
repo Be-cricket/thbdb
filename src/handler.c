@@ -194,15 +194,30 @@ gboolean thbdb_basicimpl_handler_get (thbdbBasicIf * iface, gchar ** _return, co
   
   int ret = THBDB_NORMAL;
   GString* gkey;
+  GString* gvalue;
+
   char* value;
+  int value_len;
   int returnValue = TRUE;
-  
+
+  //gvalue = g_string_new( NULL );
+  gvalue = NULL;
   gkey = g_string_new( key ); 
+  /*
   ret = get_from_bdb( 
                       gkey->str,
                       gkey->len,
                       &value
                        );
+  */
+  ret = get_from_bdb_unicode( 
+                      gkey->str,
+                      gkey->len,
+                      &value,
+		      &value_len
+                       );
+
+
   if( ret != 0 ){
     g_set_error(
                 error,
@@ -214,12 +229,16 @@ gboolean thbdb_basicimpl_handler_get (thbdbBasicIf * iface, gchar ** _return, co
     
     returnValue = FALSE;
   }else{
-    *_return = value;
+    gvalue = g_string_new_len( value, value_len );
+    *_return = gvalue->str;
   }
 
   /* Free memory(gstring)  */
   if( gkey )
     g_string_free( gkey,FALSE );
+
+  if( gvalue )
+    g_string_free( gvalue,FALSE );
 
   return returnValue;
 

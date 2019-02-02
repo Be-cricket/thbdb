@@ -258,6 +258,63 @@ u_int32_t get_from_bdb( char* key,int key_len , char** value){
 
 }
 
+/**
+ * Returns( value ) if  the specified key exists on BDB.
+ * For unicode.
+ */
+u_int32_t get_from_bdb_unicode( char* key,int key_len , char** value, int *value_len ){
+
+  u_int32_t ret;
+  DBT key_buf;        /* The key to dbp->get(). */
+  DBT value_buf;      /* The data to dbp->get(). */
+  char* dummy = NULL;          /* dummy buffer for using get() function */
+  
+  /** Check the bdb handle */
+  if (!dbp ) {
+    return THBDB_DB_NOT_OPENED_ERROR;
+  }
+
+  /*           
+   * Insert records into the database, where the key is the user input 
+   * and the data is the user input in reverse order.
+   * Zeroing the DBTs prepares them for the dbp->put() calls below. 
+   */
+  memset(&key_buf, 0, sizeof(DBT));
+  memset(&value_buf, 0, sizeof(DBT));                                                                         
+  key_buf.data = key;
+  key_buf.size = (u_int32_t)key_len;
+  value_buf.data = dummy;
+  value_buf.size = (u_int32_t)sizeof(dummy);
+  value_buf.flags = DB_DBT_MALLOC;
+
+  
+  /*     
+   * Try to get a key/value item from the BDB. 
+   */
+  ret = dbp->get(dbp, NULL, &key_buf, &value_buf, 0);
+  if ( ret == 0 ){
+    /* Nothing to do */
+  }else if ( ret == DB_NOTFOUND ){
+     /** Key/Value pair is not found in the BDB */
+     /*  The DB_NOTFOUND is not error. */
+    ret = THBDB_DB_NOTFOUND_ERROR;
+  }else{
+    /*
+     * Some kind of error was detected during the attempt to
+     * insert the record. The err() function is printf-like.
+     */
+    dbp->err(dbp, ret, "get(%s)",
+             PROGRAM_NAME, key);
+  }
+
+  if( value_buf.data != NULL ){
+    *value = value_buf.data;
+    *value_len = (int) &(value_buf.size);
+  }
+  
+  return ret;
+}
+
 
 /**
  *
