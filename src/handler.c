@@ -58,10 +58,10 @@ thbdb_basicimpl_handler_hello(thbdbBasicIf * iface, gchar ** _return, const gcha
   THRIFT_UNUSED_VAR (error);
 
   //@@@
-  puts (" ^^ hello() ^^");
+  puts ("* hello() is Called.");
    
   GString *retValue;
-  retValue = g_string_new( "" );
+  retValue = g_string_new( NULL );
   g_string_printf( retValue ,"Server received: %s \n" , arg );
   puts( retValue->str );
   
@@ -90,7 +90,7 @@ thbdb_basicimpl_handler_put (thbdbBasicIf * iface, const gchar * key, const gcha
   g_return_val_if_fail (THBDB_IS_BASIC_HANDLER (iface), FALSE);
 
   //@@@
-  puts (" ^^ put() ^^");
+  puts ("* put() is called.");
   gkey = g_string_new( key ); 
   gvalue = g_string_new( value ); 
 
@@ -132,7 +132,7 @@ gboolean thbdb_basicimpl_handler_exists (thbdbBasicIf * iface, gboolean* _return
   g_return_val_if_fail (THBDB_IS_BASIC_HANDLER (iface), FALSE);
 
   //@@@
-  puts (" ^^ exists() ^^ ");
+  puts ("* exists() is called.");
 
   
   int ret = THBDB_NORMAL;
@@ -174,7 +174,8 @@ gboolean thbdb_basicimpl_handler_exists (thbdbBasicIf * iface, gboolean* _return
  */
 gboolean thbdb_basicimpl_handler_put_async (thbdbBasicIf * iface, const gchar * key, const gchar * value, GError ** error)
 {
-
+  puts ( "* put_async() is called." );
+  fputs( "*   --> put_async() is under construction.", stderr );
   return FALSE;
 }
 
@@ -189,8 +190,7 @@ gboolean thbdb_basicimpl_handler_get (thbdbBasicIf * iface, gchar ** _return, co
   g_return_val_if_fail (THBDB_IS_BASIC_HANDLER (iface), FALSE);
 
   //@@@
-  puts (" ^^ get() ^^ ");
-
+  puts ("* get() is called.");
   
   int ret = THBDB_NORMAL;
   GString* gkey;
@@ -200,17 +200,10 @@ gboolean thbdb_basicimpl_handler_get (thbdbBasicIf * iface, gchar ** _return, co
   int value_len;
   int returnValue = TRUE;
 
-  //gvalue = g_string_new( NULL );
   gvalue = NULL;
   gkey = g_string_new( key ); 
 
-  /*
-  ret = get_from_bdb( 
-                      gkey->str,
-                      gkey->len,
-                      &value
-                       );
-  */
+
   ret = get_from_bdb_unicode( 
                       gkey->str,
                       gkey->len,
@@ -231,6 +224,7 @@ gboolean thbdb_basicimpl_handler_get (thbdbBasicIf * iface, gchar ** _return, co
   }else{
     gvalue = g_string_new_len( value, value_len );
 
+    /* Free memory allocated by bdb. */
     if( value ){
       free( value );
     }
@@ -260,7 +254,7 @@ gboolean thbdb_basicimpl_handler_remove (thbdbBasicIf * iface, const gchar * key
   g_return_val_if_fail (THBDB_IS_BASIC_HANDLER (iface), FALSE);
 
   //@@@
-  puts (" ^^ remove() ^^ ");
+  puts ("* remove() is called.");
   
   int ret = THBDB_NORMAL;
   GString* gkey;
@@ -297,6 +291,9 @@ gboolean thbdb_basicimpl_handler_remove (thbdbBasicIf * iface, const gchar * key
 gboolean thbdb_basicimpl_handler_get_keys (thbdbBasicIf * iface, thbdbKeys ** _return, thbdbInvalidOperation ** exp, GError ** error)
 {
   g_return_val_if_fail (THBDB_IS_BASIC_HANDLER (iface), FALSE);
+  //@@@
+  puts ("* ping() is called.");
+  fputs("*   --> Under construction.", stderr);
 
   return FALSE;
 }
@@ -314,7 +311,7 @@ thbdb_basicimpl_handler_ping (thbdbBasicIf * iface, GError ** error)
   g_return_val_if_fail (THBDB_IS_BASIC_HANDLER (iface), FALSE);
 
   //@@@
-  puts (" ^^ ping() ^^ ");
+  puts ("* ping() is called.");
   return TRUE;
 
 }
@@ -331,7 +328,7 @@ gboolean thbdb_basicimpl_handler_get_status (thbdbBasicIf * iface, gint32* _retu
   g_return_val_if_fail (THBDB_IS_BASIC_HANDLER (iface), FALSE);
 
   //@@@
-  puts (" ^^ get_status() ^^ ");
+  puts ("* get_status() is called.");
       
   int ret ;
   int status; /* handled or not */
@@ -368,7 +365,7 @@ gboolean thbdb_basicimpl_handler_compact (thbdbBasicIf *iface, gint32* _return, 
   g_return_val_if_fail (THBDB_IS_BASIC_HANDLER (iface), FALSE);
 
   //@@@
-  puts (" ^^ compact() ^^ ");
+  puts ("* compact() is called.");
   
   int ret = THBDB_NORMAL;
   int returnValue = FALSE;
@@ -389,18 +386,7 @@ gboolean thbdb_basicimpl_handler_compact (thbdbBasicIf *iface, gint32* _return, 
                 "An error is occered under executing compact(). A BDB contained in the ThBDB haven't been opened yet."
                 ); 
       } else {
-
         returnValue = TRUE;
-
-/*         // エラー発生時、エラー出力し処理を止める場合、g_set_errorを有効にする
-        g_set_error(
-                error,
-                G_THBDB_ERROR,
-                _return,
-                "An error is occered under executing compact() CODE=(%d)",
-                _return
-                ); 
- */
       } 
     
   } else {
@@ -426,7 +412,7 @@ gboolean thbdb_basicimpl_handler_get_keys_by_position (thbdbBasicIf * iface, thb
   g_return_val_if_fail(size >= 0, FALSE);
 
   //@@@
-  puts (" ^^ get_keys_by_position() ^^ ");
+  puts ("* get_keys_by_position() is called.");
 
   int ret = THBDB_NORMAL;
   int returnValue = FALSE;

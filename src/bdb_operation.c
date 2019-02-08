@@ -23,11 +23,16 @@ g_thbdb_error_quark (void)
 }
 
 
-
 /**
- * A handle of the BDB.
+ * A handle of the BDB. Caution !!! not MTS.
  */
 DB *dbp = NULL;
+
+/**
+ * A handle of the BDB for cursor. Caution!!! not MTS.
+ */
+DBC *dbcp = NULL;
+
 
 /**
  * Initializes the bdb that ThBDB contains.
@@ -441,7 +446,7 @@ u_int32_t compact_bdb( int* status ){
 
 
 /**
- * Returns TRUE if get_keys_from_bdb on success, False if get_keys_from_bdb on failure.
+ * Return TRUE if get_keys_from_bdb on success, False if get_keys_from_bdb on failure.
  * 
  * parameters
  * 1: position : zero origin. position to start reading.
@@ -451,9 +456,9 @@ u_int32_t compact_bdb( int* status ){
 u_int32_t get_keys_from_bdb( const int position, const int size, thbdbKeys* _return ){
 
   u_int32_t ret;  
-	DBC *dbcp;		      /* Cursor used for scanning over the database. */
-	DBT key;		        /* The key to dbp->put()/from dbcp->get(). */
-	DBT data;	  	      /* The data to dbp->put()/from dbcp->get(). */
+  DBC *dbcp;		      /* Cursor used for scanning over the database. */
+  DBT key;		        /* The key to dbp->put()/from dbcp->get(). */
+  DBT data;	  	      /* The data to dbp->put()/from dbcp->get(). */
   int rowcounter = 0; /* rowdata counter */
   int list_len = 0;   /* exist key counter */
 
@@ -462,23 +467,23 @@ u_int32_t get_keys_from_bdb( const int position, const int size, thbdbKeys* _ret
     return THBDB_DB_NOT_OPENED_ERROR;
   }
 
-	/*
-	 * Create the cursor to use to iterate over the records.
-	 */
-	if ((ret = dbp->cursor(dbp, NULL, &dbcp, 0)) != 0) {
-		dbp->err(dbp, ret, "%s: get_keys_from_bdb->DB->cursor", PROGRAM_NAME);
+  /*
+   * Create the cursor to use to iterate over the records.
+   */
+  if ((ret = dbp->cursor(dbp, NULL, &dbcp, 0)) != 0) {
+    dbp->err(dbp, ret, "%s: get_keys_from_bdb->DB->cursor", PROGRAM_NAME);
     return THBDB_DB_CURSOR_OPEN_ERROR;
-	}
+  }
 
-	/*
-	 * Initialize the key/dpata pair so that Berkeley DB manages the memory
-	 * for the key and data DBTs, allocating and freeing them as needed.
-	 */
-	memset(&key, 0, sizeof(key));
-	memset(&data, 0, sizeof(data));
+  /*
+   * Initialize the key/dpata pair so that Berkeley DB manages the memory
+   * for the key and data DBTs, allocating and freeing them as needed.
+   */
+  memset(&key, 0, sizeof(key));
+  memset(&data, 0, sizeof(data));
 
-	/* Walk through the database and print out the key/data pairs. */
-	while ((ret = dbcp->get(dbcp, &key, &data, DB_NEXT)) == 0){
+  /* Walk through the database and print out the key/data pairs. */
+  while ((ret = dbcp->get(dbcp, &key, &data, DB_NEXT)) == 0){
   
     if ( rowcounter >= position ){
       list_len++;
@@ -487,10 +492,10 @@ u_int32_t get_keys_from_bdb( const int position, const int size, thbdbKeys* _ret
 
         gchar * _elem = NULL;
         if (_elem != NULL)
-        {
-          g_free(_elem);
-          _elem = NULL;
-        }
+	  {
+	    g_free(_elem);
+	    _elem = NULL;
+	  }
         
         _elem=g_malloc(key.size);
         g_strlcpy(_elem, key.data, key.size+1);
@@ -515,33 +520,180 @@ u_int32_t get_keys_from_bdb( const int position, const int size, thbdbKeys* _ret
     _return->__isset_key = TRUE;
   }  
 
-	/*
-	 * The DB_NOTFOUND return code is expected when all the records have
-	 * been retrieved. Any other return code is an error.
-	 */
+  /*
+   * The DB_NOTFOUND return code is expected when all the records have
+   * been retrieved. Any other return code is an error.
+   */
   if (ret != DB_NOTFOUND && ret != 0) {      
-		dbp->err(dbp, ret, "%s: get_keys_from_bdb->DBcursor->get", PROGRAM_NAME);
-		goto err_close_cursor;
+    dbp->err(dbp, ret, "%s: get_keys_from_bdb->DBcursor->get", PROGRAM_NAME);
+    goto err_close_cursor;
   }
 
-	/*
-	 * A cursor should be closed .
-	 */
-	if ((ret = dbcp->close(dbcp)) != 0) {
-		dbp->err(dbp, ret, "%s: get_keys_from_bdb->DBcursor->close", PROGRAM_NAME);
-		return (THBDB_DB_CURSOR_CLOSE_ERROR);
-	}
+  /*
+   * A cursor should be closed .
+   */
+  if ((ret = dbcp->close(dbcp)) != 0) {
+    dbp->err(dbp, ret, "%s: get_keys_from_bdb->DBcursor->close", PROGRAM_NAME);
+    return (THBDB_DB_CURSOR_CLOSE_ERROR);
+  }
 
-	return (THBDB_NORMAL);
+  return (THBDB_NORMAL);
 
-	/*
-	 * An error has occurred while the cursor is open. First close it, then
-	 * fall through to close the database handle.
-	 */
-err_close_cursor:
+  /*
+   * An error has occurred while the cursor is open. First close it, then
+   * fall through to close the database handle.
+   */
+ err_close_cursor:
   /* close cursor */
   if ( dbcp != NULL ){
     dbcp->close(dbcp);
   }
-	return (THBDB_DB_GET_KEYS_ERROR);
+  return (THBDB_DB_GET_KEYS_ERROR);
+}
+
+
+/**
+ * Open cursor.
+ */
+u_int32_t open_cursor(){
+  u_int32_t ret;  
+
+  /** Check the bdb cusor handle */
+  if (!dbp ) {
+    return THBDB_DB_NOT_OPENED_ERROR;
+  }
+
+  /*
+   * Create the cursor to use to iterate over the records.
+   */
+  if ((ret = dbp->cursor(dbp, NULL, &dbcp, 0)) != 0) {
+    dbp->err(dbp, ret, "%s: get_keys_from_bdb->DB->cursor", PROGRAM_NAME);
+    return THBDB_DB_CURSOR_OPEN_ERROR;
+  }
+
+  return THBDB_NORMAL;
+}
+
+
+/**
+ *
+ * Closes internal bdb cursor.
+ *
+ */
+u_int32_t close_cursor(){
+
+  if( !dbp )
+    return THBDB_DB_NOT_OPENED_ERROR;
+  
+  /*
+   * Close pthe database. Inside the close() call Berkeley DB flushes the
+   * database cache out to the filesystem. The DB_NOSYNC option is ignored
+   * in cases such as this one, which do not use an explicitly created       
+   * environment (DB_ENV).                                                      
+   */
+  (void)dbp->close(dbp, 0);
+
+  return THBDB_NORMAL;
+}
+
+
+
+/**
+ */
+u_int32_t get_keys_from_bdb_test( const int position, const int size, thbdbKeys* _return ){
+
+  u_int32_t ret;  
+  // DBC *dbcp;		      /* Cursor used for scanning over the database. */
+  DBT key;		      /* The key to dbp->put()/from dbcp->get(). */
+  DBT data;	  	      /* The data to dbp->put()/from dbcp->get(). */
+  int rowcounter = 0; /* rowdata counter */
+  int list_len = 0;   /* exist key counter */
+
+  /** Check the bdb handle */
+  if (!dbp ) {
+    return THBDB_DB_NOT_OPENED_ERROR;
+  }
+
+  /*
+   * Create the cursor to use to iterate over the records.
+   */
+  if ((ret = dbp->cursor(dbp, NULL, &dbcp, 0)) != 0) {
+    dbp->err(dbp, ret, "%s: get_keys_from_bdb->DB->cursor", PROGRAM_NAME);
+    return THBDB_DB_CURSOR_OPEN_ERROR;
+  }
+
+  /*
+   * Initialize the key/dpata pair so that Berkeley DB manages the memory
+   * for the key and data DBTs, allocating and freeing them as needed.
+   */
+  memset(&key, 0, sizeof(key));
+  memset(&data, 0, sizeof(data));
+
+  /* Walk through the database and print out the key/data pairs. */
+  while ((ret = dbcp->get(dbcp, &key, &data, DB_NEXT)) == 0){
+  
+    if ( rowcounter >= position ){
+      list_len++;
+
+      if (list_len <= size){
+
+        gchar * _elem = NULL;
+        if (_elem != NULL)
+	  {
+	    g_free(_elem);
+	    _elem = NULL;
+	  }
+        
+        _elem=g_malloc(key.size);
+        g_strlcpy(_elem, key.data, key.size+1);
+        g_ptr_array_add (_return->key, _elem);
+
+      } else {
+        list_len--;
+        break;
+      }
+    }
+    rowcounter++;
+  }
+
+  /* Set Return Value   */
+  if (list_len==0){
+    _return->numOfKeys = list_len;
+    _return->__isset_numOfKeys = TRUE;
+    _return->__isset_key = FALSE;
+  }else{
+    _return->numOfKeys = list_len;
+    _return->__isset_numOfKeys = TRUE;
+    _return->__isset_key = TRUE;
+  }  
+
+  /*
+   * The DB_NOTFOUND return code is expected when all the records have
+   * been retrieved. Any other return code is an error.
+   */
+  if (ret != DB_NOTFOUND && ret != 0) {      
+    dbp->err(dbp, ret, "%s: get_keys_from_bdb->DBcursor->get", PROGRAM_NAME);
+    goto err_close_cursor;
+  }
+
+  /*
+   * A cursor should be closed .
+   */
+  if ((ret = dbcp->close(dbcp)) != 0) {
+    dbp->err(dbp, ret, "%s: get_keys_from_bdb->DBcursor->close", PROGRAM_NAME);
+    return (THBDB_DB_CURSOR_CLOSE_ERROR);
+  }
+
+  return (THBDB_NORMAL);
+
+  /*
+   * An error has occurred while the cursor is open. First close it, then
+   * fall through to close the database handle.
+   */
+ err_close_cursor:
+  /* close cursor */
+  if ( dbcp != NULL ){
+    dbcp->close(dbcp);
+  }
+  return (THBDB_DB_GET_KEYS_ERROR);
 }
