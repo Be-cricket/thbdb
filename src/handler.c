@@ -2,7 +2,7 @@
  * handler.c
  * Handling the basic operation for the bdb.
  *
- * Written by M.Yasaka on 6/17/2018
+ * Written by Be-cricke on 6/17/2018
  */
 
 #include <signal.h>
@@ -25,7 +25,7 @@
 #include "thbdb_errno.h"
 #include "bdb_operation.h"
 #include "handler.h"
-
+#include "common.h"
 
 /* ------------------------------------------------------------------------------------- */
 /*                 The implementation of ThbdbBasicimplHandler follows.                  */
@@ -401,7 +401,7 @@ gboolean thbdb_basicimpl_handler_compact (thbdbBasicIf *iface, gint32* _return, 
  * Returns ( _return ) a key list that the internal bdb has .
  * Under construction.
  */
-gboolean thbdb_basicimpl_handler_get_keys_by_position (thbdbBasicIf * iface, thbdbKeys ** _return, const gint32 position, const gint32 size, thbdbInvalidOperation ** exp, GError ** error)
+gboolean thbdb_basicimpl_handler_get_keys_by_position_org (thbdbBasicIf * iface, thbdbKeys ** _return, const gint32 position, const gint32 size, thbdbInvalidOperation ** exp, GError ** error)
 {
   THRIFT_UNUSED_VAR (iface);
   THRIFT_UNUSED_VAR (error);
@@ -432,6 +432,90 @@ gboolean thbdb_basicimpl_handler_get_keys_by_position (thbdbBasicIf * iface, thb
     returnValue = TRUE;
   }
   return returnValue;
+}
+
+//@@@under construction
+gboolean thbdb_basicimpl_handler_get_keys_by_position (thbdbBasicIf * iface, thbdbKeys ** _return, const gint32 position, const gint32 size, thbdbInvalidOperation ** exp, GError ** error)
+{
+  THRIFT_UNUSED_VAR (iface);
+  THRIFT_UNUSED_VAR (error);
+  g_return_val_if_fail (THBDB_IS_BASIC_HANDLER (iface), FALSE);
+
+  g_return_val_if_fail(*_return != NULL, FALSE);
+  g_return_val_if_fail(position >= 0, FALSE);
+  g_return_val_if_fail(size >= 0, FALSE);
+
+  DEBUG_WRITE_LOG("* get_keys_by_position() is called.");
+
+  int ret = THBDB_NORMAL;
+  char* key;		      /* The key to dbp->put() */
+  int  key_len;	  	  /* The size of key */
+  int rowcounter = 0; /* rowdata counter */
+  int list_len = 0;   /* exist key counter */
+
+  /* Open cursor.*/
+  ret = init_bdb_cursor();
+  if( ret != THBDB_NORMAL ){
+    g_set_error(
+                error,
+                G_THBDB_ERROR,
+                ret,
+                "An error is occered under executing get_keys_by_position() CODE=(%d)",
+                ret
+                );
+    return FALSE;
+  }
+
+  /** Creates key list from bdb cursor */
+  while(( ret = get_key_from_cursor(  &key, &key_len )) == 0 ){
+    
+    if ( rowcounter >= position ){
+      list_len++;
+
+      if (list_len <= size){
+        gchar * _elem = NULL;
+        _elem=g_malloc( key_len );
+        g_strlcpy(_elem, key, key_len+1);
+        g_ptr_array_add ( (*_return)->key, _elem);
+
+        // Free allocated key by berkely db
+        if( key != NULL ){
+          free( key );
+        }
+        
+      } else {
+        list_len--;
+        break;
+      }
+    }
+    rowcounter++;
+  }
+
+
+    /* Set Return Value   */
+  if (list_len==0){
+    (*_return)->__isset_key = FALSE;
+  }else{
+    (*_return)->__isset_key = TRUE;
+  }  
+  (*_return)->numOfKeys = list_len;
+  (*_return)->__isset_numOfKeys = TRUE;
+
+  
+
+  ret = close_bdb_cursor();
+  if( ret != THBDB_NORMAL ){
+    g_set_error(
+                error,
+                G_THBDB_ERROR,
+                ret,
+                "An error is occered under executing get_keys_by_position() CODE=(%d)",
+                ret
+                );
+    return FALSE;
+  }
+  
+  return TRUE;
 }
 
 /*------------------------------  API Handlers (END)-----------------------------------*/

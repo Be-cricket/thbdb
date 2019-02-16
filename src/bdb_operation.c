@@ -208,7 +208,7 @@ u_int32_t exists_on_bdb( char* key,int key_len , int* status){
 }
 
 /**
- * Returns( value ) if  the specified key exists on BDB.
+ * Returns the value to which the specified key is mapped  on BDB.
  */
 u_int32_t get_from_bdb( char* key,int key_len , char** value){
 
@@ -264,7 +264,7 @@ u_int32_t get_from_bdb( char* key,int key_len , char** value){
 }
 
 /**
- * Returns( value ) if  the specified key exists on BDB.
+ * Returns the value to which the specified key is mapped on BDB.
  * For unicode.
  */
 u_int32_t get_from_bdb_unicode( char* key,int key_len , char** value, int *value_len ){
@@ -598,102 +598,111 @@ u_int32_t close_cursor(){
 
 
 
+/*----
+  Add cursor controlling methods at 2/10/2019
+  ----*/
+
 /**
+ * Open cursor for sequencial read on bdb. 
  */
-u_int32_t get_keys_from_bdb_test( const int position, const int size, thbdbKeys* _return ){
+u_int32_t init_bdb_cursor(){
 
   u_int32_t ret;  
-  // DBC *dbcp;		      /* Cursor used for scanning over the database. */
-  DBT key;		      /* The key to dbp->put()/from dbcp->get(). */
-  DBT data;	  	      /* The data to dbp->put()/from dbcp->get(). */
-  int rowcounter = 0; /* rowdata counter */
-  int list_len = 0;   /* exist key counter */
 
   /** Check the bdb handle */
   if (!dbp ) {
     return THBDB_DB_NOT_OPENED_ERROR;
   }
 
+  /** Check the bdb cursor handle */
+  if ( dbcp ){
+    return THBDB_DB_CURSOR_ALREADY_OPENED_ERROR;
+  }
+  
   /*
    * Create the cursor to use to iterate over the records.
    */
   if ((ret = dbp->cursor(dbp, NULL, &dbcp, 0)) != 0) {
-    dbp->err(dbp, ret, "%s: get_keys_from_bdb->DB->cursor", PROGRAM_NAME);
+    dbp->err(dbp, ret, "%s: init_bdb_cursor() ", PROGRAM_NAME);
     return THBDB_DB_CURSOR_OPEN_ERROR;
   }
 
-  /*
-   * Initialize the key/dpata pair so that Berkeley DB manages the memory
-   * for the key and data DBTs, allocating and freeing them as needed.
-   */
-  memset(&key, 0, sizeof(key));
-  memset(&data, 0, sizeof(data));
-
-  /* Walk through the database and print out the key/data pairs. */
-  while ((ret = dbcp->get(dbcp, &key, &data, DB_NEXT)) == 0){
+  return ret;
   
-    if ( rowcounter >= position ){
-      list_len++;
+}  
 
-      if (list_len <= size){
+/**
+ * Close the bdb cursor.
+ * 
+ */
+u_int32_t close_bdb_cursor(){
 
-        gchar * _elem = NULL;
-        if (_elem != NULL)
-	  {
-	    g_free(_elem);
-	    _elem = NULL;
-	  }
-        
-        _elem=g_malloc(key.size);
-        g_strlcpy(_elem, key.data, key.size+1);
-        g_ptr_array_add (_return->key, _elem);
+  u_int32_t ret = 0;
 
-      } else {
-        list_len--;
-        break;
-      }
-    }
-    rowcounter++;
+  /** Check the bdb handle */
+  if (!dbp ) {
+    return THBDB_DB_NOT_OPENED_ERROR;
   }
 
-  /* Set Return Value   */
-  if (list_len==0){
-    _return->numOfKeys = list_len;
-    _return->__isset_numOfKeys = TRUE;
-    _return->__isset_key = FALSE;
-  }else{
-    _return->numOfKeys = list_len;
-    _return->__isset_numOfKeys = TRUE;
-    _return->__isset_key = TRUE;
-  }  
-
-  /*
-   * The DB_NOTFOUND return code is expected when all the records have
-   * been retrieved. Any other return code is an error.
-   */
-  if (ret != DB_NOTFOUND && ret != 0) {      
-    dbp->err(dbp, ret, "%s: get_keys_from_bdb->DBcursor->get", PROGRAM_NAME);
-    goto err_close_cursor;
-  }
-
-  /*
-   * A cursor should be closed .
-   */
-  if ((ret = dbcp->close(dbcp)) != 0) {
-    dbp->err(dbp, ret, "%s: get_keys_from_bdb->DBcursor->close", PROGRAM_NAME);
-    return (THBDB_DB_CURSOR_CLOSE_ERROR);
-  }
-
-  return (THBDB_NORMAL);
-
-  /*
-   * An error has occurred while the cursor is open. First close it, then
-   * fall through to close the database handle.
-   */
- err_close_cursor:
   /* close cursor */
-  if ( dbcp != NULL ){
-    dbcp->close(dbcp);
+  if ( dbcp ){
+    ret = dbcp->close(dbcp);
+    dbcp = NULL;
   }
-  return (THBDB_DB_GET_KEYS_ERROR);
+  return ret;
+}
+
+  
+
+/**
+ * Returns the key on BDB to which the cursor position is mapped.
+ */
+u_int32_t get_key_from_cursor(  char** key, int* key_len ){
+
+  u_int32_t ret;
+  DBT key_buf;        /* The key to dbcp->get(). */
+  DBT value_buf;      /* The data to dbcp->get(). */
+  //char* dummy = NULL;          /* dummy buffer for using get() function */
+  
+  /** Check the bdb handle */
+  if (!dbp ) {
+    return THBDB_DB_NOT_OPENED_ERROR;
+  }
+  if ( !dbcp ){
+    return THBDB_DB_CURSOR_NOT_OPENED_ERROR;
+  }
+
+  memset(&key_buf, 0, sizeof(key_buf));
+  memset(&value_buf, 0, sizeof(value_buf));                                                                         
+  key_buf.flags = DB_DBT_MALLOC;
+  value_buf.flags = DB_DBT_MALLOC;
+  
+
+  /*     
+   * Try to get a key/value item from the BDB. 
+   */
+  ret = dbcp->get(dbcp, &key_buf, &value_buf, DB_NEXT);  
+  if ( ret == 0 ){
+
+    if( value_buf.data ){
+      free( value_buf.data );
+    }
+    *key = key_buf.data;
+    *key_len = key_buf.size;
+
+  }else if ( ret == DB_NOTFOUND ){
+     /** Key/Value pair is not found in the BDB */
+     /*  The DB_NOTFOUND is not error. */
+    ret = THBDB_DB_NOTFOUND_ERROR;
+  }else{
+    /*
+     * Some kind of error was detected during the attempt to
+     * insert the record. The err() function is printf-like.
+     */
+    dbp->err(dbp, ret, "get(%s)",
+             PROGRAM_NAME, key);
+  }
+
+  return ret;
+
 }

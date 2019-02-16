@@ -41,9 +41,15 @@ u_int32_t compact_bdb();
 
 u_int32_t init_bdb();
 
-u_int32_t close_bdb();
+u_int32_t init_bdb_cursor();
+
+u_int32_t close_bdb_cursor();
 
 u_int32_t unlink_bdb();
+
+u_int32_t get_key_from_cursor();
+
+
 
 #define PROGRAM_NAME   "ThBDB"       /* The programe name used for error messages and ...  */
 #define BDB_FILENAME   "thbdb.db"    /* Default database filename */

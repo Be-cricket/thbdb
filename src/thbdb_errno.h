@@ -15,8 +15,10 @@
 #define THBDB_DB_NOTFOUND_ERROR  4      /* The specified key is not found from the ThBDB.*/
 #define THBDB_DB_COMPACT_ERROR  5       /* ThBDB compact state is not normal */
 #define THBDB_DB_CURSOR_OPEN_ERROR  6   /* A BDB contained in the ThBDB cannnot be opened cursor. */
-#define THBDB_DB_CURSOR_CLOSE_ERROR  7  /* A BDB contained in the ThBDB happend error to close cursor. */
-#define THBDB_DB_GET_KEYS_ERROR  8      /* A BDB contained in the ThBDB happend error to get keys by position. */
+#define THBDB_DB_CURSOR_ALREADY_OPENED_ERROR  7   /* A BDB contained in the ThBDB cannnot be opened cursor. */
+#define THBDB_DB_CURSOR_CLOSE_ERROR  8  /* A BDB contained in the ThBDB happend error to close cursor. */
+#define THBDB_DB_CURSOR_NOT_OPENED_ERROR  9  /* A BDB contained in the ThBDB happend error to close cursor. */
+#define THBDB_DB_GET_KEYS_ERROR  10      /* A BDB contained in the ThBDB happend error to get keys by position. */
 
 
 #endif /* THBDB_ERRNO_H */

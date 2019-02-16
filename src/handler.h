@@ -2,7 +2,7 @@
  * handler.h
  * Handling the basic operation for the bdb.
  *
- * Written by M.Yasaka on 6/17/2018
+ * Written by Be-cricket on 6/17/2018
  */
 #ifndef HANDLER_H
 #define HANDLER_H
