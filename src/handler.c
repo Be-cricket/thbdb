@@ -63,8 +63,7 @@ thbdb_basicimpl_handler_hello(thbdbBasicIf * iface, gchar ** _return, const gcha
   THRIFT_UNUSED_VAR (iface);
   THRIFT_UNUSED_VAR (error);
 
-  //@@@
-  puts ("* hello() is Called.");
+  DEBUG_WRITE_LOG("* hello() is Called.");
    
   GString *retValue;
   retValue = g_string_new( NULL );
@@ -95,8 +94,7 @@ thbdb_basicimpl_handler_put (thbdbBasicIf * iface, const gchar * key, const gcha
   THRIFT_UNUSED_VAR (error);
   g_return_val_if_fail (THBDB_IS_BASIC_HANDLER (iface), FALSE);
 
-  //@@@
-  puts ("* put() is called.");
+  DEBUG_WRITE_LOG("* put() is called.");
   gkey = g_string_new( key ); 
   gvalue = g_string_new( value ); 
 
@@ -137,8 +135,7 @@ gboolean thbdb_basicimpl_handler_exists (thbdbBasicIf * iface, gboolean* _return
   THRIFT_UNUSED_VAR (error);
   g_return_val_if_fail (THBDB_IS_BASIC_HANDLER (iface), FALSE);
 
-  //@@@
-  puts ("* exists() is called.");
+  DEBUG_WRITE_LOG("* exists() is called.");
 
   
   int ret = THBDB_NORMAL;
@@ -180,8 +177,8 @@ gboolean thbdb_basicimpl_handler_exists (thbdbBasicIf * iface, gboolean* _return
  */
 gboolean thbdb_basicimpl_handler_put_async (thbdbBasicIf * iface, const gchar * key, const gchar * value, GError ** error)
 {
-  puts ( "* put_async() is called." );
-  fputs( "*   --> put_async() is under construction.", stderr );
+  DEBUG_WRITE_LOG( "* put_async() is called." );
+  DEBUG_WRITE_LOG( "*   --> put_async() is under construction." );
   return FALSE;
 }
 
@@ -195,8 +192,7 @@ gboolean thbdb_basicimpl_handler_get (thbdbBasicIf * iface, gchar ** _return, co
   THRIFT_UNUSED_VAR (error);
   g_return_val_if_fail (THBDB_IS_BASIC_HANDLER (iface), FALSE);
 
-  //@@@
-  puts ("* get() is called.");
+  DEBUG_WRITE_LOG("* get() is called.");
   
   int ret = THBDB_NORMAL;
   GString* gkey;
@@ -259,8 +255,7 @@ gboolean thbdb_basicimpl_handler_remove (thbdbBasicIf * iface, const gchar * key
   THRIFT_UNUSED_VAR (error);
   g_return_val_if_fail (THBDB_IS_BASIC_HANDLER (iface), FALSE);
 
-  //@@@
-  puts ("* remove() is called.");
+  DEBUG_WRITE_LOG("* remove() is called.");
   
   int ret = THBDB_NORMAL;
   GString* gkey;
@@ -297,9 +292,8 @@ gboolean thbdb_basicimpl_handler_remove (thbdbBasicIf * iface, const gchar * key
 gboolean thbdb_basicimpl_handler_get_keys (thbdbBasicIf * iface, thbdbKeys ** _return, thbdbInvalidOperation ** exp, GError ** error)
 {
   g_return_val_if_fail (THBDB_IS_BASIC_HANDLER (iface), FALSE);
-  //@@@
-  puts ("* ping() is called.");
-  fputs("*   --> Under construction.", stderr);
+  DEBUG_WRITE_LOG("* ping() is called.");
+  DEBUG_WRITE_LOG("*   --> Under construction.");
 
   return FALSE;
 }
@@ -316,8 +310,7 @@ thbdb_basicimpl_handler_ping (thbdbBasicIf * iface, GError ** error)
   THRIFT_UNUSED_VAR (error);
   g_return_val_if_fail (THBDB_IS_BASIC_HANDLER (iface), FALSE);
 
-  //@@@
-  puts ("* ping() is called.");
+  DEBUG_WRITE_LOG("* ping() is called.");
   return TRUE;
 
 }
@@ -333,8 +326,7 @@ gboolean thbdb_basicimpl_handler_get_status (thbdbBasicIf * iface, gint32* _retu
   THRIFT_UNUSED_VAR (error);
   g_return_val_if_fail (THBDB_IS_BASIC_HANDLER (iface), FALSE);
 
-  //@@@
-  puts ("* get_status() is called.");
+  DEBUG_WRITE_LOG("* get_status() is called.");
       
   int ret ;
   int status; /* handled or not */
@@ -370,8 +362,7 @@ gboolean thbdb_basicimpl_handler_compact (thbdbBasicIf *iface, gint32* _return, 
   THRIFT_UNUSED_VAR (error);
   g_return_val_if_fail (THBDB_IS_BASIC_HANDLER (iface), FALSE);
 
-  //@@@
-  puts ("* compact() is called.");
+  DEBUG_WRITE_LOG("* compact() is called.");
   
   int ret = THBDB_NORMAL;
   int returnValue = FALSE;
@@ -528,8 +519,7 @@ thbdb_basicimpl_handler_init (ThbdbBasicimplHandler *self)
 static void
 thbdb_basicimpl_handler_class_init (ThbdbBasicimplHandlerClass *klass)
 {
-  //@@@
-  puts( "Initializing a handler class.... " );
+  DEBUG_WRITE_LOG( "Initializing a handler class.... " );
   
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   thbdbBasicHandlerClass *thbdb_basic_handler_class =

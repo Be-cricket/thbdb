@@ -11,7 +11,7 @@
 #define DEBUG_WRITE
 
 #if defined(DEBUG)
-#define DEBUG_WRITE_LOG(s)  printf( s );puts("");
+#define DEBUG_WRITE_LOG(s)  printf( s );puts("")
 #endif
 
 

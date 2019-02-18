@@ -51,7 +51,7 @@ sigint_handler (int signal_number)
   sigint_received = TRUE;
 
   /* Close internal BDB */
-  puts( " Closing internal BDB.  " );
+  DEBUG_WRITE_LOG( " Closing internal BDB.  " );
   close_bdb();
   
   /* Shut down the server gracefully */
@@ -91,7 +91,7 @@ int main ( void ){
 #endif
 
  
- DEBUG_WRITE_LOG( " before handler  " )
+  DEBUG_WRITE_LOG( " before handler  " );
    
   /* Create an instance of our handler, which provides the service's
      methods' implementation */
@@ -151,7 +151,7 @@ int main ( void ){
   /* Start the server, which will run until its stop method is invoked
      (from within the SIGINT handler, in this case) */
 
-  DEBUG_WRITE_LOG("Starting the server...")
+  DEBUG_WRITE_LOG("Starting the server...");
 
   thrift_server_serve (server, &error);
 
@@ -163,7 +163,7 @@ int main ( void ){
     g_clear_error (&error);
   }
 
-  DEBUG_WRITE_LOG("done.")
+  DEBUG_WRITE_LOG("done.");
   
   g_object_unref (server);
   g_object_unref (transport_factory);
