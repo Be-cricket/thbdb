@@ -8,20 +8,15 @@
 
 #include <sys/types.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
-#include <glib.h>
-#include <glib-object.h>
+//#include <glib.h>
+//#include <glib-object.h>
 #include <db.h>
+#include "common.h"
 #include "bdb_operation.h"
 #include "thbdb_errno.h"
-
-GQuark
-g_thbdb_error_quark (void)
-{
-  return g_quark_from_static_string ("g-thbdb-error-quark");
-}
-
 
 /**
  * A handle of the BDB. Caution !!! not MTS.
@@ -178,14 +173,14 @@ u_int32_t exists_on_bdb( char* key,int key_len , int* status){
   value_buf.flags = DB_DBT_MALLOC;
 
   /** Initializes status */
-  *status = FALSE;
+  *status = false;
 
   /*     
    * Try to get a key/value item from the BDB. 
    */
   ret = dbp->get(dbp, NULL, &key_buf, &value_buf, 0);
   if ( ret == 0 ){
-    *status = TRUE;
+    *status = true;
   }else if ( ret == DB_NOTFOUND ){
      /** Key/Value pair is not found in the BDB */
      /*  The DB_NOTFOUND is normal. */
@@ -400,18 +395,17 @@ u_int32_t is_null_bdb( int* status ){
   u_int32_t ret = THBDB_NORMAL;  
   
   /** Initializes status */
-  *status = TRUE;
+  *status = true;
 
   /** Check the bdb is null */
   if ( !dbp ) {
-    *status = TRUE;
+    *status = true;
   } else {
-    *status = FALSE;
+    *status = false;
   }
   return ret;
 
 }
-
 
 /**
  * Returns TRUE if compact on success, False if compact on failure.
@@ -444,7 +438,7 @@ u_int32_t compact_bdb( int* status ){
 
 }
 
-
+#if 0 
 /**
  * Return TRUE if get_keys_from_bdb on success, False if get_keys_from_bdb on failure.
  * 
@@ -550,7 +544,7 @@ u_int32_t get_keys_from_bdb( const int position, const int size, thbdbKeys* _ret
   }
   return (THBDB_DB_GET_KEYS_ERROR);
 }
-
+#endif
 
 /**
  * Open cursor.

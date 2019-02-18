@@ -22,10 +22,16 @@
 
 #include "gen-c_glib/thbdb_basic.h"
 #include "gen-c_glib/thbdb_thbdb_types.h"
+#include "common.h"
 #include "thbdb_errno.h"
 #include "bdb_operation.h"
 #include "handler.h"
-#include "common.h"
+
+GQuark
+g_thbdb_error_quark (void)
+{
+  return g_quark_from_static_string ("g-thbdb-error-quark");
+}
 
 /* ------------------------------------------------------------------------------------- */
 /*                 The implementation of ThbdbBasicimplHandler follows.                  */
@@ -396,45 +402,14 @@ gboolean thbdb_basicimpl_handler_compact (thbdbBasicIf *iface, gint32* _return, 
   return returnValue;  
 }
 
-
 /**
- * Returns ( _return ) a key list that the internal bdb has .
- * Under construction.
+ * Returns key list.
+ * 
+ * parameters
+ * 1: position : zero origin. position to start reading
+ * 2: size     : number of items to read
+ * 3: _return  : key array list
  */
-gboolean thbdb_basicimpl_handler_get_keys_by_position_org (thbdbBasicIf * iface, thbdbKeys ** _return, const gint32 position, const gint32 size, thbdbInvalidOperation ** exp, GError ** error)
-{
-  THRIFT_UNUSED_VAR (iface);
-  THRIFT_UNUSED_VAR (error);
-  g_return_val_if_fail (THBDB_IS_BASIC_HANDLER (iface), FALSE);
-
-  g_return_val_if_fail(*_return != NULL, FALSE);
-  g_return_val_if_fail(position >= 0, FALSE);
-  g_return_val_if_fail(size >= 0, FALSE);
-
-  //@@@
-  puts ("* get_keys_by_position() is called.");
-
-  int ret = THBDB_NORMAL;
-  int returnValue = FALSE;
-
-  /* getKeys*/
-  ret = get_keys_from_bdb( position, size, *_return );
-
-  if( ret != THBDB_NORMAL ){
-    g_set_error(
-                error,
-                G_THBDB_ERROR,
-                ret,
-                "An error is occered under executing get_keys_by_position() CODE=(%d)",
-                ret
-                );
-  }else{
-    returnValue = TRUE;
-  }
-  return returnValue;
-}
-
-//@@@under construction
 gboolean thbdb_basicimpl_handler_get_keys_by_position (thbdbBasicIf * iface, thbdbKeys ** _return, const gint32 position, const gint32 size, thbdbInvalidOperation ** exp, GError ** error)
 {
   THRIFT_UNUSED_VAR (iface);

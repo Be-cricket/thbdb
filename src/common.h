@@ -1,6 +1,6 @@
 /*
  * ThBDB common hedder file
- * Written by Be-cricket on 6/17/2018
+ * Written by Be-cricket on 2/13/2019
  *
  * common.h
   */
@@ -8,10 +8,12 @@
 #define COMMON_H
 
 #define DEBUG
+#define DEBUG_WRITE
 
 #if defined(DEBUG)
 #define DEBUG_WRITE_LOG(s)  printf( s );puts("");
+#endif
 
 
-#endif
-#endif
+
+#endif /* COMMON_H */

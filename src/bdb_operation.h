@@ -1,6 +1,6 @@
 /*
  * This file is a sample program.
- * Written by M.Yasaka on 6/17/2018
+ * Written by Be-cricket on 2/13/2019
  *
  * bdb_operation.h
  * This file contains the bdb's initializing and finalizing operations for the bdb.
@@ -8,16 +8,20 @@
 #ifndef BDB_OPERATION_H
 #define BDB_OPERATION_H
  
-#include "gen-c_glib/thbdb_thbdb_types.h"
+//#include "gen-c_glib/thbdb_thbdb_types.h"
 
 #include <db.h>
+#include "common.h"
 
+#if 0
 /* for glib gerror */
 GQuark
 g_thbdb_error_quark (void);
 
 /** for glib error proc */
 #define G_THBDB_ERROR g_thbdb_error_quark() 
+#endif
+
 
 /** Following : Basic operations **/
 
@@ -33,13 +37,15 @@ u_int32_t exists_on_bdb( char* key,int key_len , int* status );
 
 u_int32_t is_null_bdb( int* status );
 
-u_int32_t get_keys_from_bdb( const int position, const int size, thbdbKeys* _return );
+//u_int32_t get_keys_from_bdb( const int position, const int size, thbdbKeys* _return );
 
 u_int32_t compact_bdb();
 
 /** Following : Control operations **/
 
 u_int32_t init_bdb();
+
+u_int32_t close_bdb();
 
 u_int32_t init_bdb_cursor();
 
