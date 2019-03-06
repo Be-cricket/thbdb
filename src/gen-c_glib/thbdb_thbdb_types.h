@@ -625,4 +625,54 @@ GType thbdb_basic_get_status_result_get_type (void);
 #define THBDB_IS_BASIC_GET_STATUS_RESULT_CLASS(c) (G_TYPE_CHECK_CLASS_TYPE ((c), THBDB_TYPE_BASIC_GET_STATUS_RESULT))
 #define THBDB_BASIC_GET_STATUS_RESULT_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), THBDB_TYPE_BASIC_GET_STATUS_RESULT, thbdbBasicGetStatusResultClass))
 
+/* struct BasicCompactArgs */
+struct _thbdbBasicCompactArgs
+{ 
+  ThriftStruct parent; 
+
+  /* public */
+};
+typedef struct _thbdbBasicCompactArgs thbdbBasicCompactArgs;
+
+struct _thbdbBasicCompactArgsClass
+{
+  ThriftStructClass parent;
+};
+typedef struct _thbdbBasicCompactArgsClass thbdbBasicCompactArgsClass;
+
+GType thbdb_basic_compact_args_get_type (void);
+#define THBDB_TYPE_BASIC_COMPACT_ARGS (thbdb_basic_compact_args_get_type())
+#define THBDB_BASIC_COMPACT_ARGS(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), THBDB_TYPE_BASIC_COMPACT_ARGS, thbdbBasicCompactArgs))
+#define THBDB_BASIC_COMPACT_ARGS_CLASS(c) (G_TYPE_CHECK_CLASS_CAST ((c), THBDB__TYPE_BASIC_COMPACT_ARGS, thbdbBasicCompactArgsClass))
+#define THBDB_IS_BASIC_COMPACT_ARGS(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), THBDB_TYPE_BASIC_COMPACT_ARGS))
+#define THBDB_IS_BASIC_COMPACT_ARGS_CLASS(c) (G_TYPE_CHECK_CLASS_TYPE ((c), THBDB_TYPE_BASIC_COMPACT_ARGS))
+#define THBDB_BASIC_COMPACT_ARGS_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), THBDB_TYPE_BASIC_COMPACT_ARGS, thbdbBasicCompactArgsClass))
+
+/* struct BasicCompactResult */
+struct _thbdbBasicCompactResult
+{ 
+  ThriftStruct parent; 
+
+  /* public */
+  gint32 success;
+  gboolean __isset_success;
+  thbdbInvalidOperation * exp;
+  gboolean __isset_exp;
+};
+typedef struct _thbdbBasicCompactResult thbdbBasicCompactResult;
+
+struct _thbdbBasicCompactResultClass
+{
+  ThriftStructClass parent;
+};
+typedef struct _thbdbBasicCompactResultClass thbdbBasicCompactResultClass;
+
+GType thbdb_basic_compact_result_get_type (void);
+#define THBDB_TYPE_BASIC_COMPACT_RESULT (thbdb_basic_compact_result_get_type())
+#define THBDB_BASIC_COMPACT_RESULT(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), THBDB_TYPE_BASIC_COMPACT_RESULT, thbdbBasicCompactResult))
+#define THBDB_BASIC_COMPACT_RESULT_CLASS(c) (G_TYPE_CHECK_CLASS_CAST ((c), THBDB__TYPE_BASIC_COMPACT_RESULT, thbdbBasicCompactResultClass))
+#define THBDB_IS_BASIC_COMPACT_RESULT(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), THBDB_TYPE_BASIC_COMPACT_RESULT))
+#define THBDB_IS_BASIC_COMPACT_RESULT_CLASS(c) (G_TYPE_CHECK_CLASS_TYPE ((c), THBDB_TYPE_BASIC_COMPACT_RESULT))
+#define THBDB_BASIC_COMPACT_RESULT_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), THBDB_TYPE_BASIC_COMPACT_RESULT, thbdbBasicCompactResultClass))
+
 #endif /* THBDB_THBDB_TYPES_H */
