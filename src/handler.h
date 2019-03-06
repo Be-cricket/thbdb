@@ -2,13 +2,21 @@
  * handler.h
  * Handling the basic operation for the bdb.
  *
- * Written by M.Yasaka on 6/17/2018
+ * Written by Be-cricket on 6/17/2018
  */
 #ifndef HANDLER_H
 #define HANDLER_H
 
 #include <thrift/c_glib/processor/thrift_dispatch_processor.h>
 //#include "gen-cglib/thbdb_thbdb_types.h"
+
+/* for glib gerror */
+GQuark
+g_thbdb_error_quark (void);
+
+/** for glib error proc */
+#define G_THBDB_ERROR g_thbdb_error_quark() 
+
 
 /* --------------------------------------------------------------------- */
 /*         Following: Values returned by handler methods.                */

@@ -1,7 +1,7 @@
 #!/usr/local/bin/thrift --java --c_glib --py
-# 
 
-namespace java jp.co.softbank.thbdb.thrift
+#namespace java jp.co.softbank.thbdb.thrift
+namespace java ml.masahi.thbdb.gen_java
 namespace c_glib  thbdb
 namespace py thbdb
 

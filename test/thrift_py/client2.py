@@ -33,7 +33,7 @@ if __name__ == '__main__':
         print "Call exists(u\"テスト\") = %s " % (client.put(u"テスト", u"テストバリュー"),)
 
         result = client.get(u"テスト")
-        print ( result )
+        print "Call get(\"テスト\") = %s " % result.decode('utf-8')
 
         print "Call exists(\"a\") = %s " % (client.exists("a"),)
 
@@ -41,13 +41,13 @@ if __name__ == '__main__':
 
         print "Call exists(\"c\") = %s " % (client.exists("c"),)
 
-        # print "Call get(\"get\") = %s " % (client.get("big"),)
+        print "Call get(\"get\") = %s " % (client.get("big"),)
 
         # print "Call get(\"c\") = %s " % (client.get("c"),)
 
-        # print "Call put() = %s " % (client.put("aaaaa","aaaaa"),)
+        print "Call put() = %s " % (client.put("aaaaa","aaaaa"),)
 
-        # print "Call () remove(\"aaaaa\") = %s " % (client.remove("aaaaa"),)
+        print "Call () remove(\"aaaaa\") = %s " % (client.remove("aaaaa"),)
 
         # print "Call put1() = %s " % (client.put("aaaaa","aaaaa"),)
 
