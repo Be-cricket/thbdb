@@ -1,3 +1,0 @@
-Call hello() = Server received: Yeah! 
- 
-Call exists(u"テスト") = None 
