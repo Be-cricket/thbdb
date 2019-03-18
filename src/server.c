@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include <thrift/c_glib/thrift.h>
 #include <thrift/c_glib/protocol/thrift_binary_protocol_factory.h>
@@ -24,6 +25,7 @@
 #include "common.h"
 #include "handler.h"
 #include "bdb_operation.h"
+#include "server.h"
 
 #if 0
 #endif
@@ -61,10 +63,63 @@ sigint_handler (int signal_number)
 }
 
 /**
+ * Processing command line arguments.
+ *
+ */
+int proc_args( int argc, char* const argv[] ){
+
+  int i, opt, ret = 0;
+  opterr = 0;   /* Disapper error message on stderr. */
+
+  
+  while(( opt = getopt( argc, argv, "p:" )) != -1 ){
+
+    /* Processing each arguments. */
+    switch( opt ){
+      
+    case 'p':
+      printf ( "-p processed! optarg:=%s  \n", optarg );
+      listening_port = atoi( optarg );
+      if( listening_port < 1000  || listening_port >= 0x7fff ){
+        ret = 1;
+      }
+      break;
+      
+    default:
+      ret = 1;
+      break;
+      
+    }
+  }
+
+  // Processing other arguments. (For debug)
+  for( i = optind; i < argc; i++ ){
+    //printf( "arg = %s \n", argv[i] );
+    ret = 1;
+  }
+
+  /* If an error was occered, it would print usage. */
+  if( ret == 1 ){
+    print_usage( argv[0] );
+  }
+  
+  return ret;
+}
+
+/**
+ * Explain how to use the ThBDB.
+ *
+ */
+void print_usage( char* const program ){
+      printf( "Usage: %s [-p socket listening port ] \n", program );
+}
+
+
+/**
  * ThBDB main function.
  *
  */
-int main ( void ){
+int main ( int argc, char* const argv[]  ){
 
   ThbdbBasicimplHandler *handler;
   thbdbBasicProcessor *processor;
@@ -78,6 +133,12 @@ int main ( void ){
   GError *error = NULL;
   int exit_status = 0;
   int ret;
+
+  /* Processing arguments */
+  ret = proc_args( argc, argv );
+  if( ret  ){
+    return ret;
+  }
   
   /** 
    * Initialize the BDB 
@@ -91,8 +152,6 @@ int main ( void ){
   g_type_init ();
 #endif
 
- 
-  DEBUG_WRITE_LOG( " before handler  " );
    
   /* Create an instance of our handler, which provides the service's
      methods' implementation */
@@ -114,7 +173,7 @@ int main ( void ){
      listens for client connections */
   server_transport =
     g_object_new (THRIFT_TYPE_SERVER_SOCKET,
-                  "port", 9090,
+                  "port", listening_port,
                   NULL);
 
   /* Create our transport factory, used by the server to wrap "raw"
@@ -153,7 +212,8 @@ int main ( void ){
      (from within the SIGINT handler, in this case) */
 
   DEBUG_WRITE_LOG("Starting the server...");
-
+  printf( "Listening port: %d \n", listening_port );
+  
   thrift_server_serve (server, &error);
 
   /* If the server stopped for any reason other than having been
