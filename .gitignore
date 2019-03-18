@@ -6,6 +6,7 @@
 *.ko
 *.obj
 *.elf
+*.class
 
 # Linker output
 *.ilk
@@ -55,3 +56,4 @@ dkms.conf
 src/gen-c_glib/
 */gen-py/
 test/__pycache__/
+./test/java/java_test/target/
