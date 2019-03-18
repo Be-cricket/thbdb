@@ -32,8 +32,21 @@ Following: API specification.
 ### boolean exists( k:string )
   Returns true if the specified key(k:string) exsists in the TbBDB.
 
-### ping()
-  Confirm reachability.
+
+## OPERATION:
+
+
+### initialize
+  UNDER CONSTRUCTION
+  
+### open
+  UNDER CONSTRUCTION
+  
+### close
+  UNDER CONSTRUCTION
+  
+### void ping()
+  To check this thbdb is alive.
 
 ### i32 getStatus()
   Returns a status that the internal bdb's status.
@@ -50,18 +63,3 @@ Following: API specification.
     - success
   + non-zero error code
     - refer [DB->compact error code](https://docs.oracle.com/cd/E17276_01/html/api_reference/C/dbcompact.html)
-
-## OPERATION:
-
-  initialize
-
-  open
-
-  close
-
-### void ping()
-  To check this thbdb is alive.
-
-### i32 getStatus()
-  Returns the status of this thbdb.
-   
