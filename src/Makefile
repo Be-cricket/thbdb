@@ -8,7 +8,7 @@ OBJS = $(SRCS:.c=.o)
 THRIFT = thrift
 THRIFT_FLAGS = --gen c_glib
 CC = gcc
-CFLAGS = -g -Wall -O2 -I/usr/local/Cellar/glib/2.56.1/include/glib-2.0/ -I/usr/local/Cellar/glib/2.56.1/lib/glib-2.0/include/ -I/usr/local/include
+CFLAGS = -g -Wall -O2 -I/usr/local/Cellar/glib/2.56.1/include/glib-2.0/ -I/usr/local/Cellar/glib/2.56.1/lib/glib-2.0/include/ -I/usr/local/include -I/usr/local/include/glib-2.0 -I/usr/local/lib/glib-2.0/include/
 LDFLAGS = -L/usr/local/lib -lglib-2.0 -lgio-2.0 -lgmodule-2.0 -lgobject-2.0 -ldb -lthrift -lthrift_c_glib
 
 .SUFFIXES: .c .o

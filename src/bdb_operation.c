@@ -8,26 +8,26 @@
 
 #include <sys/types.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
-#include <glib.h>
-#include <glib-object.h>
+//#include <glib.h>
+//#include <glib-object.h>
 #include <db.h>
+#include "common.h"
 #include "bdb_operation.h"
 #include "thbdb_errno.h"
 
-GQuark
-g_thbdb_error_quark (void)
-{
-  return g_quark_from_static_string ("g-thbdb-error-quark");
-}
-
-
-
 /**
- * A handle of the BDB.
+ * A handle of the BDB. Caution !!! not MTS.
  */
 DB *dbp = NULL;
+
+/**
+ * A handle of the BDB for cursor. Caution!!! not MTS.
+ */
+DBC *dbcp = NULL;
+
 
 /**
  * Initializes the bdb that ThBDB contains.
@@ -111,6 +111,7 @@ u_int32_t put_on_bdb( char* key,int key_len, char* value, int value_len){
   /*           
    * Insert records into the database, where the key is the user input 
    * and the data is the user input in reverse order.
+
    * Zeroing the DBTs prepares them for the dbp->put() calls below. 
    */
   memset(&key_buf, 0, sizeof(DBT));
@@ -173,14 +174,14 @@ u_int32_t exists_on_bdb( char* key,int key_len , int* status){
   value_buf.flags = DB_DBT_MALLOC;
 
   /** Initializes status */
-  *status = FALSE;
+  *status = false;
 
   /*     
    * Try to get a key/value item from the BDB. 
    */
   ret = dbp->get(dbp, NULL, &key_buf, &value_buf, 0);
   if ( ret == 0 ){
-    *status = TRUE;
+    *status = true;
   }else if ( ret == DB_NOTFOUND ){
      /** Key/Value pair is not found in the BDB */
      /*  The DB_NOTFOUND is normal. */
@@ -203,7 +204,7 @@ u_int32_t exists_on_bdb( char* key,int key_len , int* status){
 }
 
 /**
- * Returns( value ) if  the specified key exists on BDB.
+ * Returns the value to which the specified key is mapped  on BDB.
  */
 u_int32_t get_from_bdb( char* key,int key_len , char** value){
 
@@ -256,6 +257,63 @@ u_int32_t get_from_bdb( char* key,int key_len , char** value){
   
   return ret;
 
+}
+
+/**
+ * Returns the value to which the specified key is mapped on BDB.
+ * For unicode.
+ */
+u_int32_t get_from_bdb_unicode( char* key,int key_len , char** value, int *value_len ){
+
+  u_int32_t ret;
+  DBT key_buf;        /* The key to dbp->get(). */
+  DBT value_buf;      /* The data to dbp->get(). */
+  char* dummy = NULL;          /* dummy buffer for using get() function */
+  
+  /** Check the bdb handle */
+  if (!dbp ) {
+    return THBDB_DB_NOT_OPENED_ERROR;
+  }
+
+  /*           
+   * Insert records into the database, where the key is the user input 
+   * and the data is the user input in reverse order.
+   * Zeroing the DBTs prepares them for the dbp->put() calls below. 
+   */
+  memset(&key_buf, 0, sizeof(DBT));
+  memset(&value_buf, 0, sizeof(DBT));                                                                         
+  key_buf.data = key;
+  key_buf.size = (u_int32_t)key_len;
+  value_buf.data = dummy;
+  value_buf.size = (u_int32_t)sizeof(dummy);
+  value_buf.flags = DB_DBT_MALLOC;
+
+  
+  /*     
+   * Try to get a key/value item from the BDB. 
+   */
+  ret = dbp->get(dbp, NULL, &key_buf, &value_buf, 0);
+  if ( ret == 0 ){
+    /* Nothing to do */
+  }else if ( ret == DB_NOTFOUND ){
+     /** Key/Value pair is not found in the BDB */
+     /*  The DB_NOTFOUND is not error. */
+    ret = THBDB_DB_NOTFOUND_ERROR;
+  }else{
+    /*
+     * Some kind of error was detected during the attempt to
+     * insert the record. The err() function is printf-like.
+     */
+    dbp->err(dbp, ret, "get(%s)",
+             PROGRAM_NAME, key);
+  }
+
+  if( value_buf.data != NULL ){
+    *value = value_buf.data;
+    *value_len = (int) (value_buf.size);
+  }
+  
+  return ret;
 }
 
 
@@ -330,3 +388,209 @@ u_int32_t close_bdb(){
   return THBDB_NORMAL;
 }
 
+/**
+ * Returns(status) TRUE if BDB is null, False if BDB isn't null.
+ */
+u_int32_t is_null_bdb( int* status ){
+
+  u_int32_t ret = THBDB_NORMAL;  
+  
+  /** Initializes status */
+  *status = true;
+
+  /** Check the bdb is null */
+  if ( !dbp ) {
+    *status = true;
+  } else {
+    *status = false;
+  }
+  return ret;
+
+}
+
+/**
+ * Returns TRUE if compact on success, False if compact on failure.
+ * Returns(status) a non-zero error code on failure and 0 on success .
+ */
+u_int32_t compact_bdb( int* status ){
+
+  /** Initializes status */
+  *status = 0;
+
+  /** Check the bdb handle */
+  if (!dbp ) {
+    return THBDB_DB_NOT_OPENED_ERROR;
+  }
+  /*     
+   * Try to commact the BDB. 
+   */
+  *status = dbp->compact(dbp, NULL, NULL, NULL, NULL, DB_FREE_SPACE, NULL);
+
+  if ( *status != 0 ){
+    /*
+     * Some kind of error was detected during the attempt to
+     * compact the BDB. The err() function is printf-like.
+     */
+    dbp->err(dbp, *status, "compact" );
+    return THBDB_DB_COMPACT_ERROR;
+  }
+
+  return THBDB_NORMAL;
+
+}
+
+
+/**
+ * Open cursor.
+ */
+u_int32_t open_cursor(){
+  u_int32_t ret;  
+
+  /** Check the bdb cusor handle */
+  if (!dbp ) {
+    return THBDB_DB_NOT_OPENED_ERROR;
+  }
+
+  /*
+   * Create the cursor to use to iterate over the records.
+   */
+  if ((ret = dbp->cursor(dbp, NULL, &dbcp, 0)) != 0) {
+    dbp->err(dbp, ret, "%s: get_keys_from_bdb->DB->cursor", PROGRAM_NAME);
+    return THBDB_DB_CURSOR_OPEN_ERROR;
+  }
+
+  return THBDB_NORMAL;
+}
+
+
+/**
+ *
+ * Closes internal bdb cursor.
+ *
+ */
+u_int32_t close_cursor(){
+
+  if( !dbp )
+    return THBDB_DB_NOT_OPENED_ERROR;
+  
+  /*
+   * Close pthe database. Inside the close() call Berkeley DB flushes the
+   * database cache out to the filesystem. The DB_NOSYNC option is ignored
+   * in cases such as this one, which do not use an explicitly created       
+   * environment (DB_ENV).                                                      
+   */
+  (void)dbp->close(dbp, 0);
+
+  return THBDB_NORMAL;
+}
+
+
+
+/*----
+  Add cursor controlling methods at 2/10/2019
+  ----*/
+
+/**
+ * Open cursor for sequencial read on bdb. 
+ */
+u_int32_t init_bdb_cursor(){
+
+  u_int32_t ret;  
+
+  /** Check the bdb handle */
+  if (!dbp ) {
+    return THBDB_DB_NOT_OPENED_ERROR;
+  }
+
+  /** Check the bdb cursor handle */
+  if ( dbcp ){
+    return THBDB_DB_CURSOR_ALREADY_OPENED_ERROR;
+  }
+  
+  /*
+   * Create the cursor to use to iterate over the records.
+   */
+  if ((ret = dbp->cursor(dbp, NULL, &dbcp, 0)) != 0) {
+    dbp->err(dbp, ret, "%s: init_bdb_cursor() ", PROGRAM_NAME);
+    return THBDB_DB_CURSOR_OPEN_ERROR;
+  }
+
+  return ret;
+  
+}  
+
+/**
+ * Close the bdb cursor.
+ * 
+ */
+u_int32_t close_bdb_cursor(){
+
+  u_int32_t ret = 0;
+
+  /** Check the bdb handle */
+  if (!dbp ) {
+    return THBDB_DB_NOT_OPENED_ERROR;
+  }
+
+  /* close cursor */
+  if ( dbcp ){
+    ret = dbcp->close(dbcp);
+    dbcp = NULL;
+  }
+  return ret;
+}
+
+  
+
+/**
+ * Returns the key on BDB to which the cursor position is mapped.
+ */
+u_int32_t get_key_from_cursor(  char** key, int* key_len ){
+
+  u_int32_t ret;
+  DBT key_buf;        /* The key to dbcp->get(). */
+  DBT value_buf;      /* The data to dbcp->get(). */
+  //char* dummy = NULL;          /* dummy buffer for using get() function */
+  
+  /** Check the bdb handle */
+  if (!dbp ) {
+    return THBDB_DB_NOT_OPENED_ERROR;
+  }
+  if ( !dbcp ){
+    return THBDB_DB_CURSOR_NOT_OPENED_ERROR;
+  }
+
+  memset(&key_buf, 0, sizeof(key_buf));
+  memset(&value_buf, 0, sizeof(value_buf));                                                                         
+  key_buf.flags = DB_DBT_MALLOC;
+  value_buf.flags = DB_DBT_MALLOC;
+  
+
+  /*     
+   * Try to get a key/value item from the BDB. 
+   */
+  ret = dbcp->get(dbcp, &key_buf, &value_buf, DB_NEXT);  
+  if ( ret == 0 ){
+
+    if( value_buf.data ){
+      free( value_buf.data );
+    }
+    *key = key_buf.data;
+    *key_len = key_buf.size;
+
+  }else if ( ret == DB_NOTFOUND ){
+     /** Key/Value pair is not found in the BDB */
+     /*  The DB_NOTFOUND is not error. */
+    ret = THBDB_DB_NOTFOUND_ERROR;
+  }else{
+    /*
+     * Some kind of error was detected during the attempt to
+     * insert the record. The err() function is printf-like.
+     */
+    dbp->err(dbp, ret, "get(%s)",
+             PROGRAM_NAME, key);
+  }
+
+  return ret;
+
+}
