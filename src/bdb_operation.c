@@ -40,7 +40,7 @@ u_int32_t init_bdb(){
   /* Create a database handle, to be configured, then opened. */
   if ((ret = db_create(&dbp, NULL, 0)) != 0) {
     fprintf(stderr,
-            "%s: db_create: %s\n", PROGRAM_NAME, db_strerror(ret));
+            "%s: db_create: %s\n", BDB_FILENAME, db_strerror(ret));
     return (THBDB_DB_OPEN_ERROR);
   }
 
@@ -74,7 +74,7 @@ u_int32_t init_bdb(){
     * in order to see how the behavior changes.
     */
     if ((ret = dbp->open(dbp,
-        NULL, PROGRAM_NAME
+        NULL, BDB_FILENAME
                          , NULL, DB_HASH, DB_CREATE, 0664)) != 0) {
         dbp->err(dbp, ret, "%s: open",PROGRAM_NAME );
         goto err_close_db;

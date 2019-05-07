@@ -7,6 +7,7 @@
 *.obj
 *.elf
 *.class
+*.db
 
 # Linker output
 *.ilk
@@ -52,8 +53,10 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
+# Created files
 */gen-c_glib/
 src/gen-c_glib/
 */gen-py/
 test/__pycache__/
 ./test/java/java_test/target/
+./test/java/java_test/build/

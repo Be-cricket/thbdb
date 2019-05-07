@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ml.masahi.thbdb.AppTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2019-03-19T08:30:34" hostname="COAMAC15092285.local" time="0.001">
+  <properties/>
+  <testcase name="testApp" classname="ml.masahi.thbdb.AppTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
