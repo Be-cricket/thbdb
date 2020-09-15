@@ -30,9 +30,9 @@ if __name__ == '__main__':
         # print "Call put() = %s " % (client.put("big","123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"),)
 
         
-        print "Call exists(u\"テスト\") = %s " % (client.put(u"テスト", u"テストバリュー"),)
+        print "Call exists(u\"test\") = %s " % (client.put(u"test", u"test value"),)
 
-        result = client.get(u"テスト")
+        result = client.get(u"test")
         print ( result )
 
         print "Call exists(\"a\") = %s " % (client.exists("a"),)

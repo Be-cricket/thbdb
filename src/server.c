@@ -4,6 +4,10 @@
  * Written by M.Yasaka on 6/17/2018
  */
 
+//config.hが存在するなら読み込む
+#ifdef HAVE_CONFIG_H
+#  include "config.h"
+#endif
 #include <glib-object.h>
 #include <signal.h>
 #include <stdio.h>
@@ -20,8 +24,8 @@
 #include <thrift/c_glib/transport/thrift_server_socket.h>
 #include <thrift/c_glib/transport/thrift_server_transport.h>
 
-#include "gen-c_glib/thbdb_basic.h"
-#include "gen-c_glib/thbdb_thbdb_types.h"
+#include "gen_c_glib/thbdb_basic.h"
+#include "gen_c_glib/thbdb_thbdb_types.h"
 #include "common.h"
 #include "handler.h"
 #include "bdb_operation.h"
@@ -42,6 +46,9 @@ ThriftServer *server = NULL;
    SIGINT (i.e. Ctrl-C) so we can tell whether its termination was
    abnormal */
 gboolean sigint_received = FALSE;
+
+/* ThBDB db path */
+char *db_path = NULL; 
 
 /* Handle SIGINT ("Ctrl-C") signals by gracefully stopping the
    server */
@@ -72,7 +79,7 @@ int proc_args( int argc, char* const argv[] ){
   opterr = 0;   /* Disapper error message on stderr. */
 
   
-  while(( opt = getopt( argc, argv, "p:" )) != -1 ){
+  while(( opt = getopt( argc, argv, "p:d:" )) != -1 ){
 
     /* Processing each arguments. */
     switch( opt ){
@@ -83,6 +90,11 @@ int proc_args( int argc, char* const argv[] ){
       if( listening_port < 1000  || listening_port >= 0x7fff ){
         ret = 1;
       }
+      break;
+
+    case 'd':
+      printf ( "-d processed! optarg:=%s  \n", optarg );
+      db_path = optarg;
       break;
       
     default:
@@ -111,7 +123,7 @@ int proc_args( int argc, char* const argv[] ){
  *
  */
 void print_usage( char* const program ){
-      printf( "Usage: %s [-p socket listening port ] \n", program );
+      printf( "Usage: %s [-p socket listening port ]  [-d db file path]\n", program );
 }
 
 
@@ -138,12 +150,12 @@ int main ( int argc, char* const argv[]  ){
   ret = proc_args( argc, argv );
   if( ret  ){
     return ret;
-  }
-  
+  }  
+
   /** 
    * Initialize the BDB 
    */
-  ret = init_bdb();
+  ret = init_bdb(db_path);
   if ( ret ){
     return EXIT_FAILURE;
   }

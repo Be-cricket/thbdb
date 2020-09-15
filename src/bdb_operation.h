@@ -43,7 +43,7 @@ u_int32_t compact_bdb();
 
 /** Following : Control operations **/
 
-u_int32_t init_bdb();
+u_int32_t init_bdb( char* db_path );
 
 u_int32_t close_bdb();
 
