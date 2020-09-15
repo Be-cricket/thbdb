@@ -21,8 +21,8 @@
 #include <thrift/c_glib/transport/thrift_server_socket.h>
 #include <thrift/c_glib/transport/thrift_server_transport.h>
 
-#include "gen-c_glib/thbdb_basic.h"
-#include "gen-c_glib/thbdb_thbdb_types.h"
+#include "gen_c_glib/thbdb_basic.h"
+#include "gen_c_glib/thbdb_thbdb_types.h"
 #include "common.h"
 #include "thbdb_errno.h"
 #include "bdb_operation.h"

@@ -33,7 +33,7 @@ DBC *dbcp = NULL;
  * Initializes the bdb that ThBDB contains.
  * This function is a sample implementation.
  */
-u_int32_t init_bdb(){
+u_int32_t init_bdb(char* db_path){
 
   u_int32_t ret;   /* Return code from the BDB */
   
@@ -68,17 +68,22 @@ u_int32_t init_bdb(){
     goto err_close_db;
   }
 
-   /* 
-    * Now open the configured handle. The DB_HASH specifies that it
-    * it will be a hash_index mode. You could experiment by changing that to DB_BTREE 
-    * in order to see how the behavior changes.
-    */
-    if ((ret = dbp->open(dbp,
-        NULL, BDB_FILENAME
-                         , NULL, DB_HASH, DB_CREATE, 0664)) != 0) {
-        dbp->err(dbp, ret, "%s: open",PROGRAM_NAME );
-        goto err_close_db;
-    }
+  /* 
+   * Now open the configured handle. The DB_HASH specifies that it
+   * it will be a hash_index mode. You could experiment by changing that to DB_BTREE 
+   * in order to see how the behavior changes.
+   */
+  if ( db_path ) {
+    ret = dbp->open(dbp, NULL, db_path, NULL, DB_HASH, DB_CREATE, 0664);
+  } else {
+    ret = dbp->open(dbp, NULL, BDB_FILENAME, NULL, DB_HASH, DB_CREATE, 0664);
+  }
+
+
+  if (ret != 0) {
+      dbp->err(dbp, ret, "%s: open",PROGRAM_NAME );
+      goto err_close_db;
+  }
 
   
   return THBDB_NORMAL;
@@ -129,7 +134,8 @@ u_int32_t put_on_bdb( char* key,int key_len, char* value, int value_len){
    * that key. Without DB_NOOVERWRITE, a dbp->put() of an already
    * existing key replaces the old record with the new one.
    */
-  ret = dbp->put(dbp, NULL, &key_buf, &value_buf, DB_NOOVERWRITE); 
+  // ret = dbp->put(dbp, NULL, &key_buf, &value_buf, DB_NOOVERWRITE); 
+  ret = dbp->put(dbp, NULL, &key_buf, &value_buf, DB_OVERWRITE_DUP);
   if (ret != 0) {
     /*
      * Some kind of error was detected during the attempt to
