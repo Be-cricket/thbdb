@@ -1,6 +1,8 @@
 /*
  * ThBDB : The Berkeley DB with Thrift.
  * Written by masahi on 7/8/2018
+ * 
+ * Updated by tange0327 15/9/2020
  *
  * bdb_operation.c
  * This file contains the bdb's basic operations for the Berkeley DB (Hash mode KVS).

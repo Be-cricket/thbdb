@@ -2,6 +2,8 @@
  * This file has the errorno definitions for ThBDB.
  * Written by M.Yasaka on 7/11/2018
  *
+ * Updated by tange0327 15/9/2020
+ * 
  * thbdb_errno.h
  */
 #ifndef THBDB_ERRNO_H

@@ -2,6 +2,8 @@
  * This file is a sample program.
  * Written by Be-cricket on 2/13/2019
  *
+ * Updated by tange0327 15/9/2020
+ * 
  * bdb_operation.h
  * This file contains the bdb's initializing and finalizing operations for the bdb.
  */
