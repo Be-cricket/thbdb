@@ -2,6 +2,9 @@
  * This file is the thbdb's main program.
  * 
  * Written by M.Yasaka on 6/17/2018
+ * 
+ * Updated by tange0327 15/9/2020
+ * 
  */
 
 //config.hが存在するなら読み込む
